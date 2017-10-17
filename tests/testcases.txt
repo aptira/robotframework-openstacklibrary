@@ -1,6 +1,6 @@
 *** Settings ***
 Documentation     Engineering Limits Test
-Suite Setup       Create Session  admin    ${AUTH_URL} ${USERNAME} ${PASSWORD} ${PROJECT_NAME} ${DOMAIN_NAME}
+Suite Setup       Create Session  admin    ${AUTH_URL}  ${USERNAME}  ${PASSWORD}  ${PROJECT_NAME}  ${DOMAIN_NAME}
 Suite Teardown  Delete All Sessions
 Library  Collections
 Library  String
@@ -20,23 +20,23 @@ ${TEST_USER}     testuser
 *** Test Cases ***
 Project Creation
     [Tags]  create
-    Create Project  admin ${TEST_PROJECT} ${TEST_DOMAIN}
-    ${resp}=  Get Project  admin ${TEST_PROJECT} ${TEST_DOMAIN}
-    Should Be Equal As Strings  ${resp.name} ${TEST_PROJECT}
+    Create Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
+    ${resp}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
+    Should Be Equal As Strings  ${resp.name}  ${TEST_PROJECT}
 
 Project Deletion
     [Tags]  delete
-    ${resp}=  Get Project  admin ${TEST_PROJECT} ${TEST_DOMAIN}
-    Delete Project  admin ${resp.id}
+    ${resp}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
+    Delete Project  admin  ${resp.id}
     
 User Creation
-    [Tags] create
-    Create User  admin ${TEST_USER} ${TEST_PROJECT} ${TEST_DOMAIN}
-    ${resp}=  Get User  admin ${TEST_USER} ${TEST_PROJECT}
-    Should Be Equal As Strings  ${resp.name} ${TEST_USER}
+    [Tags]  create
+    Create User  admin  ${TEST_USER}  ${TEST_PROJECT}  ${TEST_DOMAIN}
+    ${resp}=  Get User  admin  ${TEST_USER}  ${TEST_PROJECT}
+    Should Be Equal As Strings  ${resp.name}  ${TEST_USER}
      
 User Deletion
     [Tags]  delete
-    ${resp}=  Get User  admin ${TEST_USER} ${TEST_PROJECT}
-    Delete User  admin ${resp.id}
+    ${resp}=  Get User  admin ${TEST_USER}  ${TEST_PROJECT}
+    Delete User  admin  ${resp.id}
  
