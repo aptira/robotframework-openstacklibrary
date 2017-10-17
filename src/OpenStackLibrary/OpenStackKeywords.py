@@ -1,6 +1,7 @@
 import json
 import sys
-
+import random
+import string
 import logging
 
 import robot
@@ -44,7 +45,12 @@ class OpenStackKeywords(object):
         #self.builtin.log('Users: %s' % users, 'DEBUG')
         self._cache.register(sess, alias=alias)
         return sess
-    
+
+    def delete_all_sessions(self):
+        """Removes all the session objects"""
+
+        self._cache.empty_cache()
+
     def create_project(self, alias, project_name, domain='default'):
         self.builtin.log('Creating project: %s' % project_name, 'DEBUG')
         session = self._cache.switch(alias)
@@ -67,7 +73,27 @@ class OpenStackKeywords(object):
                 return project
         return None
 
-    def delete_all_sessions(self):
-        """Removes all the session objects"""
+    def create_user(self, alias, user_name, project, domain='default', password=None):
+        self.builtin.log('Creating user: %s' % user_name, 'DEBUG')
+        session = self._cache.switch(alias)
+        ks = ksclient.Client(session=session)
+        if password is None:
+            password=''.join(random.SystemRandom().choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(16))
+        ks.users.create(user_name, domain=domain, project=project, password=password)
+        return password
+    
+    def get_user(self, alias, user_name, project_name):
+        self.builtin.log('Getting user: %s of project %s' % (user_name, project_name), 'DEBUG')
+        session = self._cache.switch(alias)
+        ks = ksclient.Client(session=session)
+        users = ks.users.list(project=project_name)
+        for user in users:
+            if user.name == user_name:
+                return user
+        return None
 
-        self._cache.empty_cache()
+    def delete_user(self, alias, user_id):
+        self.builtin.log('Deleting user: %s' % user_id, 'DEBUG')
+        session = self._cache.switch(alias)
+        ks = ksclient.Client(session=session)
+        ks.users.delete(user_id)
