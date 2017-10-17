@@ -20,7 +20,7 @@ class OpenStackKeywords(object):
         self.debug = 0
 
     def create_session(self, alias, auth_url, username, password, project_name, domain='default',
-                       verify=False):
+                       verify=True):
 
         """ Create Session: create a session to OpenStack
         `alias` Robot Framework alias to identify the session
@@ -32,10 +32,10 @@ class OpenStackKeywords(object):
         auth = v3.Password(auth_url=auth_url,
                            username=username,
                            password=password,
-                           #project_name=project_name,
-                           domain_name=domain,
+                           project_name=project_name,
+                           #domain_name=domain,
                            user_domain_name = domain,
-                           #project_domain_name = domain
+                           project_domain_name = domain
                            )
         sess = kssession.Session(auth=auth, verify = verify)
         #self.builtin.log('Created session: %s' % sess.auth.__dict__, 'DEBUG')
@@ -57,11 +57,15 @@ class OpenStackKeywords(object):
         ks = ksclient.Client(session=session)
         ks.projects.delete(project_name)
 
-    def get_project(self, alias, project_name):
+    def get_project(self, alias, project_name, domain='default'):
         self.builtin.log('Getting project: %s' % project_name, 'DEBUG')
         session = self._cache.switch(alias)
         ks = ksclient.Client(session=session)
-        return ks.projects.get(project_name)
+        projects = ks.projects.list(domain=domain)
+        for project in projects:
+            if project.name == project_name:
+                return project
+        return None
 
     def delete_all_sessions(self):
         """Removes all the session objects"""
