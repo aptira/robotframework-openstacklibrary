@@ -12,6 +12,10 @@ from keystoneauth1.identity import v3
 from keystoneauth1 import session as kssession
 from keystoneclient.v3 import client as ksclient
 
+from novaclient import client as nvclient
+
+NOVA_API_VERSION=2
+
 class OpenStackKeywords(object):
     ROBOT_LIBRARY_SCOPE = 'Global'
     
@@ -97,3 +101,16 @@ class OpenStackKeywords(object):
         session = self._cache.switch(alias)
         ks = ksclient.Client(session=session)
         ks.users.delete(user_id)
+        
+    def create_flavor(self, alias, flavor_name, ram=2048, vcpus=1, disk=20):
+        self.builtin.log('Creating flavor: %s' % flavor_name, 'DEBUG')
+        session = self._cache.switch(alias)
+        nova = nvclient.Client(NOVA_API_VERSION, session=session)
+        return nova.flavors.create(flavor_name, ram, vcpus, disk)
+    
+    def delete_flavor(self, alias, flavor_id):
+        self.builtin.log('Deleting flavor: %s' % flavor_id, 'DEBUG')
+        session = self._cache.switch(alias)
+        nova = nvclient.Client(NOVA_API_VERSION, session=session)
+        nova.flavors.delete(flavor_id)
+        

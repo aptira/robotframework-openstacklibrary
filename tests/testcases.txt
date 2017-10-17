@@ -8,14 +8,15 @@ Library  ../src/OpenStackLibrary/OpenStackKeywords.py
 Library  OperatingSystem
 
 *** Variables ***
-${AUTH_URL}      %{OS_AUTH_URL}
-${USERNAME}      %{OS_USERNAME}
-${PASSWORD}      %{OS_PASSWORD}
-${PROJECT_NAME}  %{OS_PROJECT_NAME}
-${DOMAIN_NAME}   %{OS_PROJECT_DOMAIN_NAME}
-${TEST_PROJECT}  testprj
-${TEST_DOMAIN}   default
-${TEST_USER}     testuser
+${AUTH_URL}            %{OS_AUTH_URL}
+${USERNAME}            %{OS_USERNAME}
+${PASSWORD}            %{OS_PASSWORD}
+${PROJECT_NAME}        %{OS_PROJECT_NAME}
+${DOMAIN_NAME}         %{OS_PROJECT_DOMAIN_NAME}
+${TEST_PROJECT}        testprj
+${TEST_DOMAIN}         default
+${TEST_USER}           testuser
+${TEST_FLAVOR_NAME}    testflavor
 
 *** Test Cases ***
 Project Creation
@@ -24,19 +25,33 @@ Project Creation
     ${resp}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
     Should Be Equal As Strings  ${resp.name}  ${TEST_PROJECT}
 
-Project Deletion
-    [Tags]  delete
-    ${resp}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
-    Delete Project  admin  ${resp.id}
-    
+Flavor Creation
+    [Tags]  create
+    ${FLAVOR}=  Create Flavor   admin  ${TEST_FLAVOR_NAME}
+    Set Global Variable  ${FLAVOR}
+
 User Creation
     [Tags]  create
-    Create User  admin  ${TEST_USER}  ${TEST_PROJECT}  ${TEST_DOMAIN}
+    ${userpass}=  Create User  admin  ${TEST_USER}  ${TEST_PROJECT}  ${TEST_DOMAIN}
+    Set Global Variable  ${userpass}
     ${resp}=  Get User  admin  ${TEST_USER}  ${TEST_PROJECT}
     Should Be Equal As Strings  ${resp.name}  ${TEST_USER}
+
+User Login
+    [Tags]  login
+    Create Session  user    ${AUTH_URL}  ${TEST_USER}  ${userpass}  ${TEST_PROJECT}  ${TEST_DOMAIN}
      
 User Deletion
     [Tags]  delete
     ${resp}=  Get User  admin  ${TEST_USER}  ${TEST_PROJECT}
     Delete User  admin  ${resp.id}
- 
+
+Flavor Deletion
+    [Tags]  delete
+    Delete Flavor   admin  ${FLAVOR.id}
+
+Project Deletion
+    [Tags]  delete
+    ${resp}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
+    Delete Project  admin  ${resp.id}
+    
