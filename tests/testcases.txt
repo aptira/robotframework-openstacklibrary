@@ -8,22 +8,23 @@ Library  ../src/OpenStackLibrary/OpenStackKeywords.py
 Library  OperatingSystem
 
 *** Variables ***
-${AUTH_URL}      http://openstack:35357/v3
-${USERNAME}      admin
-${PASSWORD}      admin
-${PROJECT_NAME}  default
-${DOMAIN_NAME}   default
+${AUTH_URL}      %{OS_AUTH_URL}
+${USERNAME}      %{OS_USERNAME}
+${PASSWORD}      %{OS_PASSWORD}
+${PROJECT_NAME}  %{OS_PROJECT_NAME}
+${DOMAIN_NAME}   %{OS_PROJECT_DOMAIN_NAME}
 ${TEST_PROJECT}  testprj
+${TEST_DOMAIN}   default
 
 *** Test Cases ***
 Project Creation
     [Tags]  create
-    Create Project  admin  ${TEST_PROJECT}  ${DOMAIN_NAME}
-    ${resp}=  Get Project  admin  ${TEST_PROJECT}  ${DOMAIN_NAME}
+    Create Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
+    ${resp}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
     Should Be Equal As Strings  ${resp.name}  ${TEST_PROJECT}
 
 Project Deletion
     [Tags]  delete
-    ${resp}=  Get Project  admin  ${TEST_PROJECT}  ${DOMAIN_NAME}
+    ${resp}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
     Delete Project  admin  ${resp.id}
     
