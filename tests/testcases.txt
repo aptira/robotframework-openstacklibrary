@@ -37,6 +37,6 @@ User Creation
      
 User Deletion
     [Tags]  delete
-    ${resp}=  Get User  admin ${TEST_USER}  ${TEST_PROJECT}
+    ${resp}=  Get User  admin  ${TEST_USER}  ${TEST_PROJECT}
     Delete User  admin  ${resp.id}
  
