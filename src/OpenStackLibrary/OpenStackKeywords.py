@@ -13,7 +13,7 @@ from keystoneauth1 import session as kssession
 from keystoneclient.v3 import client as ksclient
 
 from novaclient import client as nvclient
-from neutronclient.v2_0 import ntclient
+from neutronclient.v2_0 import client as ntclient
 
 NOVA_API_VERSION=2
 
