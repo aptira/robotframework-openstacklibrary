@@ -13,6 +13,7 @@ from keystoneauth1 import session as kssession
 from keystoneclient.v3 import client as ksclient
 
 from novaclient import client as nvclient
+from neutronclient.v2_0 import ntclient
 
 NOVA_API_VERSION=2
 
@@ -113,4 +114,33 @@ class OpenStackKeywords(object):
         session = self._cache.switch(alias)
         nova = nvclient.Client(NOVA_API_VERSION, session=session)
         nova.flavors.delete(flavor_id)
-        
+
+    def create_network(self, alias, network_name, physical_network=None, segmentation_id=None):
+        self.builtin.log('Creating network: %s' % network_name, 'DEBUG')
+        session = self._cache.switch(alias)
+        neutron = ntclient.Client(session=session)
+        network = {'name': network_name, 'admin_state_up': True}
+        if physical_network is not None:
+            network['provider:physical_network']=physical_network
+        if segmentation_id is not None:
+            network['provider:segmentation_id ']=segmentation_id
+        return neutron.create_network({'network': network})
+
+    def create_subnet(self, alias, network_id, subnet_name, cidr, enable_dhcp=True):
+        self.builtin.log('Creating subnet: %s' % subnet_name, 'DEBUG')
+        session = self._cache.switch(alias)
+        neutron = ntclient.Client(session=session)
+        subnet = {"network_id": network_id, 'name': subnet_name, 'cidr': cidr, 'enable_dhcp': enable_dhcp}
+        return neutron.create_subnet({'subnet': subnet})
+
+    def delete_subnet(self, alias, subnet_id):
+        self.builtin.log('Deleting subnet: %s' % subnet_id, 'DEBUG')
+        session = self._cache.switch(alias)
+        neutron = ntclient.Client(session=session)
+        neutron.delete_subnet(subnet_id)
+
+    def delete_network(self, alias, network_id):
+        self.builtin.log('Deleting network: %s' % network_id, 'DEBUG')
+        session = self._cache.switch(alias)
+        neutron = ntclient.Client(session=session)
+        neutron.delete_subnet(network_id)

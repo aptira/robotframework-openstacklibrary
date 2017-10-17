@@ -17,6 +17,18 @@ ${TEST_PROJECT}        testprj
 ${TEST_DOMAIN}         default
 ${TEST_USER}           testuser
 ${TEST_FLAVOR_NAME}    testflavor
+${NETWORK1_NAME}        testnet1
+${NETWORK2_NAME}        testnet2
+${NETWORK3_NAME}        testnet3
+${NETWORK4_NAME}        testnet4
+${SUBNET1_NAME}         testsubnet1
+${SUBNET1_CIDR}         192.168.1.0/24
+${SUBNET2_NAME}         testsubnet2
+${SUBNET2_CIDR}         192.168.2.0/24
+${SUBNET3_NAME}         testsubnet3
+${SUBNET3_CIDR}         192.168.3.0/24
+${SUBNET4_NAME}         testsubnet4
+${SUBNET4_CIDR}         192.168.4.0/24
 
 *** Test Cases ***
 Project Creation
@@ -40,6 +52,79 @@ User Creation
 User Login
     [Tags]  login
     Create Session  user    ${AUTH_URL}  ${TEST_USER}  ${userpass}  ${TEST_PROJECT}  ${TEST_DOMAIN}
+
+Network1 Creation
+    [Tags]  create
+    ${NETWORK1}=  Create Network  user  ${NETWORK1_NAME}
+    Set Global Variable  ${NETWORK1}
+
+Subnet1 Creation
+    [Tags]  create
+    ${SUBNET1}=  Create Subnet  user  ${NETWORK1.id}  ${SUBNET1_NAME}  ${SUBNET1_CIDR}
+    Set Global Variable  ${SUBNET1}
+
+Network2 Creation
+    [Tags]  create
+    ${NETWORK2}=  Create Network  user  ${NETWORK2_NAME}
+    Set Global Variable  ${NETWORK2}
+
+Subnet2 Creation
+    [Tags]  create
+    ${SUBNET2}=  Create Subnet  user  ${NETWORK2.id}  ${SUBNET2_NAME}  ${SUBNET2_CIDR}
+    Set Global Variable  ${SUBNET2}
+    
+Network3 Creation
+    [Tags]  create
+    ${NETWORK3}=  Create Network  user  ${NETWORK3_NAME}
+    Set Global Variable  ${NETWORK3}
+
+Subnet3 Creation
+    [Tags]  create
+    ${SUBNET3}=  Create Subnet  user  ${NETWORK3.id}  ${SUBNET3_NAME}  ${SUBNET3_CIDR}
+    Set Global Variable  ${SUBNET3}
+    
+Network4 Creation
+    [Tags]  create
+    ${NETWORK4}=  Create Network  user  ${NETWORK4_NAME}
+    Set Global Variable  ${NETWORK4}
+
+Subnet4 Creation
+    [Tags]  create
+    ${SUBNET4}=  Create Subnet  user  ${NETWORK4.id}  ${SUBNET4_NAME}  ${SUBNET4_CIDR}
+    Set Global Variable  ${SUBNET4}
+
+
+Subnet4 Deletion
+    [Tags]  delete
+    Delete Subnet  user  ${SUBNET4.id}
+    
+Network4 Deletion
+    [Tags]  delete
+    Delete Network  user  ${NETWORK4.id}
+
+Subnet3 Deletion
+    [Tags]  delete
+    Delete Subnet  user  ${SUBNET3.id}
+    
+Network3 Deletion
+    [Tags]  delete
+    Delete Network  user  ${NETWORK3.id}
+
+Subnet2 Deletion
+    [Tags]  delete
+    Delete Subnet  user  ${SUBNET2.id}
+    
+Network2 Deletion
+    [Tags]  delete
+    Delete Network  user  ${NETWORK2.id}
+
+Subnet1 Deletion
+    [Tags]  delete
+    Delete Subnet  user  ${SUBNET1.id}
+    
+Network1 Deletion
+    [Tags]  delete
+    Delete Network  user  ${NETWORK1.id}
      
 User Deletion
     [Tags]  delete
