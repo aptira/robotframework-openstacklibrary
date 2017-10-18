@@ -34,7 +34,8 @@ ${SUBNET4_CIDR}         192.168.4.0/24
 *** Test Cases ***
 Project Creation
     [Tags]  create
-    Create Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
+    ${PROJECT}=  Create Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
+    Set Global Variable  ${PROJECT}
     ${resp}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
     Should Be Equal As Strings  ${resp.name}  ${TEST_PROJECT}
 
@@ -45,12 +46,10 @@ Flavor Creation
 
 User Creation
     [Tags]  create
-    ${userpass}=  Create User  admin  ${TEST_USER}  ${TEST_PROJECT}  ${TEST_DOMAIN}
+    ${USER}=  Create User  admin  ${TEST_USER}  ${TEST_PROJECT}  ${TEST_DOMAIN}  global_var_name=userpass
     ${ROLE}=  Get Role  admin  ${ROLE_NAME}
-    ${USER}=  Get User  admin  ${TEST_USER}  ${TEST_PROJECT}
     ${PROJECT}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
     Add Role To User  admin  ${ROLE.id}  ${USER.id}  ${PROJECT.id}
-    Set Global Variable  ${userpass}
     ${resp}=  Get User  admin  ${TEST_USER}  ${TEST_PROJECT}
     Should Be Equal As Strings  ${resp.name}  ${TEST_USER}
 
@@ -65,7 +64,7 @@ Network1 Creation
 
 Subnet1 Creation
     [Tags]  create
-    ${SUBNET1}=  Create Subnet  user  ${NETWORK1.id}  ${SUBNET1_NAME}  ${SUBNET1_CIDR}
+    ${SUBNET1}=  Create Subnet  user  ${NETWORK1.network.id}  ${SUBNET1_NAME}  ${SUBNET1_CIDR}
     Set Global Variable  ${SUBNET1}
 
 Network2 Creation
@@ -75,7 +74,7 @@ Network2 Creation
 
 Subnet2 Creation
     [Tags]  create
-    ${SUBNET2}=  Create Subnet  user  ${NETWORK2.id}  ${SUBNET2_NAME}  ${SUBNET2_CIDR}
+    ${SUBNET2}=  Create Subnet  user  ${NETWORK2.network.id}  ${SUBNET2_NAME}  ${SUBNET2_CIDR}
     Set Global Variable  ${SUBNET2}
     
 Network3 Creation
@@ -85,7 +84,7 @@ Network3 Creation
 
 Subnet3 Creation
     [Tags]  create
-    ${SUBNET3}=  Create Subnet  user  ${NETWORK3.id}  ${SUBNET3_NAME}  ${SUBNET3_CIDR}
+    ${SUBNET3}=  Create Subnet  user  ${NETWORK3.network.id}  ${SUBNET3_NAME}  ${SUBNET3_CIDR}
     Set Global Variable  ${SUBNET3}
     
 Network4 Creation
@@ -95,41 +94,41 @@ Network4 Creation
 
 Subnet4 Creation
     [Tags]  create
-    ${SUBNET4}=  Create Subnet  user  ${NETWORK4.id}  ${SUBNET4_NAME}  ${SUBNET4_CIDR}
+    ${SUBNET4}=  Create Subnet  user  ${NETWORK4.network.id}  ${SUBNET4_NAME}  ${SUBNET4_CIDR}
     Set Global Variable  ${SUBNET4}
 
 
 Subnet4 Deletion
     [Tags]  delete
-    Delete Subnet  user  ${SUBNET4.id}
+    Delete Subnet  user  ${SUBNET4.subnet.id}
     
 Network4 Deletion
     [Tags]  delete
-    Delete Network  user  ${NETWORK4.id}
+    Delete Network  user  ${NETWORK4.network.id}
 
 Subnet3 Deletion
     [Tags]  delete
-    Delete Subnet  user  ${SUBNET3.id}
+    Delete Subnet  user  ${SUBNET3.subnet.id}
     
 Network3 Deletion
     [Tags]  delete
-    Delete Network  user  ${NETWORK3.id}
+    Delete Network  user  ${NETWORK3.network.id}
 
 Subnet2 Deletion
     [Tags]  delete
-    Delete Subnet  user  ${SUBNET2.id}
+    Delete Subnet  user  ${SUBNET2.subnet.id}
     
 Network2 Deletion
     [Tags]  delete
-    Delete Network  user  ${NETWORK2.id}
+    Delete Network  user  ${NETWORK2.network.id}
 
 Subnet1 Deletion
     [Tags]  delete
-    Delete Subnet  user  ${SUBNET1.id}
+    Delete Subnet  user  ${SUBNET1.subnet.id}
     
 Network1 Deletion
     [Tags]  delete
-    Delete Network  user  ${NETWORK1.id}
+    Delete Network  user  ${NETWORK1.network.id}
      
 User Deletion
     [Tags]  delete

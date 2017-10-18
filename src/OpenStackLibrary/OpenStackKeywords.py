@@ -60,7 +60,7 @@ class OpenStackKeywords(object):
         self.builtin.log('Creating project: %s' % project_name, 'DEBUG')
         session = self._cache.switch(alias)
         ks = ksclient.Client(session=session)
-        ks.projects.create(project_name, domain)
+        return ks.projects.create(project_name, domain)
         
     def delete_project(self, alias, project_name):
         self.builtin.log('Deleting project: %s' % project_name, 'DEBUG')
@@ -78,14 +78,15 @@ class OpenStackKeywords(object):
                 return project
         return None
 
-    def create_user(self, alias, user_name, project, domain='default', password=None):
+    def create_user(self, alias, user_name, project, domain='default', password=None, global_var_name=None):
         self.builtin.log('Creating user: %s' % user_name, 'DEBUG')
         session = self._cache.switch(alias)
         ks = ksclient.Client(session=session)
         if password is None:
             password=''.join(random.SystemRandom().choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(16))
-        ks.users.create(user_name, domain=domain, project=project, password=password)
-        return password
+        if global_var_name is not None:
+            self.builtin.set_global_variable(global_var_name, password)
+        return ks.users.create(user_name, domain=domain, project=project, password=password)
     
     def get_user(self, alias, user_name, project_name):
         self.builtin.log('Getting user: %s of project %s' % (user_name, project_name), 'DEBUG')
