@@ -3,6 +3,7 @@ import sys
 import random
 import string
 import logging
+import datetime
 
 import robot
 from robot.api import logger
@@ -174,3 +175,26 @@ class OpenStackKeywords(object):
         session = self._cache.switch(alias)
         nova = nvclient.Client(NOVA_API_VERSION, session=session)
         nova.quotas.update(project_id, instances=instances, cores=cores, ram=ram)
+
+    def create_servers(self, alias, server_name, image_uuid, flavor, count, security_group, console, timeout):
+        self.builtin.log('Creating servers: %s' % server_name, 'DEBUG')
+        session = self._cache.switch(alias)
+        nova = nvclient.Client(NOVA_API_VERSION, session=session)
+        kwargs = {"max_count": count, "min_count": count, "security_groups": [security_group]}
+        servers = nova.servers.create(server_name, image_uuid, flavor, **kwargs)
+        start_timestamp = int(datetime.datetime.now().strftime("%s"))
+        current_timestamp = int(datetime.datetime.now().strftime("%s"))
+        while current_timestamp - start_timestamp < timeout:
+            ready = []
+            for server in servers:
+                server.update()
+                if server.status == "ACTIVE":
+                    console_log = server.get_console_output()
+                    if console_log.ends_with(console):
+                        ready.append(server)
+            for server in ready:
+                servers.remove(server)
+            current_timestamp = int(datetime.datetime.now().strftime("%s"))
+        if len(servers) > 0:
+            raise Exception
+        

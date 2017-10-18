@@ -30,6 +30,8 @@ ${SUBNET3_NAME}         testsubnet3
 ${SUBNET3_CIDR}         192.168.3.0/24
 ${SUBNET4_NAME}         testsubnet4
 ${SUBNET4_CIDR}         192.168.4.0/24
+${SERVER_NAME}          testserver
+${IMAGE_UUID}           52165dd0-6204-4e6a-b1d4-67000025cafe
 
 *** Test Cases ***
 Project Creation
@@ -58,6 +60,10 @@ User Creation
 User Login
     [Tags]  login
     Create Session  user    ${AUTH_URL}  ${TEST_USER}  ${userpass}  ${TEST_PROJECT}  ${TEST_DOMAIN}
+
+Server Creation
+    [Tags]  create
+    Create Servers  admin  user  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  10  default  cirros login:  1200
 
 Network1 Creation
     [Tags]  create
