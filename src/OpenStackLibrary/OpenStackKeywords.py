@@ -15,6 +15,7 @@ from keystoneclient.v3 import client as ksclient
 
 from novaclient import client as nvclient
 from neutronclient.v2_0 import client as ntclient
+from novaclient.exceptions import NotFound
 
 NOVA_API_VERSION=2
 
@@ -176,28 +177,55 @@ class OpenStackKeywords(object):
         nova = nvclient.Client(NOVA_API_VERSION, session=session)
         nova.quotas.update(project_id, instances=instances, cores=cores, ram=ram)
 
-    def create_servers(self, alias, server_name, image_uuid, flavor, count, security_group, networks, console, timeout):
-        self.builtin.log('Creating servers: %s' % server_name, 'DEBUG')
+    def create_servers(self, alias, server_name, image_uuid, flavor, count, security_group, networks):
+        self.builtin.log('Creating servers: %s, count: %s' % (server_name,count), 'DEBUG')
+        if count < 2:
+            self.builtin.log('server count: %s, but it needs to be larger than 1.' % count, 'ERROR')
+            raise Exception
         session = self._cache.switch(alias)
         nova = nvclient.Client(NOVA_API_VERSION, session=session)
         nets = []
         for network in networks:
             nets.append({"net-id":network})
         kwargs = {"max_count": count, "min_count": count, "security_groups": [security_group], "nics": nets}
-        servers = nova.servers.create(server_name, image_uuid, flavor, **kwargs)
+        nova.servers.create(server_name, image_uuid, flavor, **kwargs)
+
+    def check_servers(self, alias, server_name, console, timeout):
+        self.builtin.log('Checking servers: %s' % server_name, 'DEBUG')
+        session = self._cache.switch(alias)
+        nova = nvclient.Client(NOVA_API_VERSION, session=session)
+        servers = nova.servers.list(search_opts={"name": server_name + "-*"})
         start_timestamp = int(datetime.datetime.now().strftime("%s"))
         current_timestamp = int(datetime.datetime.now().strftime("%s"))
+        ready = []
+        errors = []
         while current_timestamp - start_timestamp < timeout:
-            ready = []
             for server in servers:
-                server.update()
                 if server.status == "ACTIVE":
                     console_log = server.get_console_output()
                     if console_log.ends_with(console):
                         ready.append(server)
-            for server in ready:
+                elif server.status == "ERROR":
+                    errors.append(server)
+                server.update()
+            current_timestamp = int(datetime.datetime.now().strftime("%s"))
+        failed = False
+        if len(errors) + len(servers) > 0:
+            self.builtin.log('%s servers are in error state.' % len(errors), 'ERROR')
+        if len(errors) + len(ready) < len(servers):
+            self.builtin.log('%s servers are timeout.' % (len(servers)-len(errors)-len(ready)), 'ERROR')
+        start_timestamp = int(datetime.datetime.now().strftime("%s"))
+        current_timestamp = int(datetime.datetime.now().strftime("%s"))
+        deleted = []
+        while current_timestamp - start_timestamp < timeout*1000:
+            for server in servers:
+                nova.servers.delete(server)
+                try:
+                    nova.servers.update(server)
+                except NotFound as ex:
+                    deleted.append(server)
+            for server in deleted:
                 servers.remove(server)
             current_timestamp = int(datetime.datetime.now().strftime("%s"))
-        if len(servers) > 0:
+        if failed:
             raise Exception
-        
