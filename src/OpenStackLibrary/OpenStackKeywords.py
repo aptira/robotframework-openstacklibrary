@@ -146,7 +146,7 @@ class OpenStackKeywords(object):
         neutron.delete_subnet(network_id)
 
     def add_role_to_user(self, alias, role, user, project):
-        self.builtin.log('Adding role %s to user %s: %s' % (role,user), 'DEBUG')
+        self.builtin.log('Adding role %s to user %s of project %s' % (role,user,project), 'DEBUG')
         session = self._cache.switch(alias)
         ks = ksclient.Client(session=session)
         ks.roles.grant(role, user=user, project=project)
