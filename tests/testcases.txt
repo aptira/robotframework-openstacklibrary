@@ -36,7 +36,8 @@ Project Creation
     [Tags]  create
     ${PROJECT}=  Create Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
     Set Global Variable  ${PROJECT}
-    Update Network Quota  admin  ${PROJECT.id}  10  10  100
+    Update Network Quota  admin  ${PROJECT.id}  10  10  100  1  8
+    Update Compute Quota  admin  ${PROJECT.id}  10  10  20480
     ${resp}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
     Should Be Equal As Strings  ${resp.name}  ${TEST_PROJECT}
 
