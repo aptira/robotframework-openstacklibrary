@@ -127,11 +127,11 @@ class OpenStackKeywords(object):
             network['provider:segmentation_id ']=segmentation_id
         return neutron.create_network({'network': network})
 
-    def create_subnet(self, alias, network_id, subnet_name, cidr, enable_dhcp=True):
+    def create_subnet(self, alias, network_id, subnet_name, cidr, ip_version=4, enable_dhcp=True):
         self.builtin.log('Creating subnet: %s' % subnet_name, 'DEBUG')
         session = self._cache.switch(alias)
         neutron = ntclient.Client(session=session)
-        subnet = {"network_id": network_id, 'name': subnet_name, 'cidr': cidr, 'enable_dhcp': enable_dhcp}
+        subnet = {"network_id": network_id, 'name': subnet_name, 'ip_version': ip_version, 'cidr': cidr, 'enable_dhcp': enable_dhcp}
         return neutron.create_subnet({'subnet': subnet})
 
     def delete_subnet(self, alias, subnet_id):
