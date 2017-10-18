@@ -204,8 +204,10 @@ class OpenStackKeywords(object):
                 if server.status == "ACTIVE":
                     console_log = server.get_console_output()
                     if console_log.ends_with(console):
+                        self.builtin.log('%s is active and booted.' % server.id, 'DEBUG')
                         ready.append(server)
                 elif server.status == "ERROR":
+                    self.builtin.log('%s is in error state.' % server.id, 'DEBUG')
                     errors.append(server)
                 server.update()
             current_timestamp = int(datetime.datetime.now().strftime("%s"))
@@ -223,6 +225,7 @@ class OpenStackKeywords(object):
                 try:
                     nova.servers.update(server)
                 except NotFound as ex:
+                    self.builtin.log('%s is deleted.' % server.id, 'DEBUG')
                     deleted.append(server)
             for server in deleted:
                 servers.remove(server)
