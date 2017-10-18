@@ -144,7 +144,7 @@ class OpenStackKeywords(object):
         self.builtin.log('Deleting network: %s' % network_id, 'DEBUG')
         session = self._cache.switch(alias)
         neutron = ntclient.Client(session=session)
-        neutron.delete_subnet(network_id)
+        neutron.delete_network(network_id)
 
     def add_role_to_user(self, alias, role, user, project):
         self.builtin.log('Adding role %s to user %s of project %s' % (role,user,project), 'DEBUG')
