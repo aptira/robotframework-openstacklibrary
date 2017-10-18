@@ -47,7 +47,8 @@ User Creation
     [Tags]  create
     ${userpass}=  Create User  admin  ${TEST_USER}  ${TEST_PROJECT}  ${TEST_DOMAIN}
     ${ROLE}=  Get Role  admin  ${ROLE_NAME}
-    Add Role To User  admin  ${ROLE.id}  ${TEST_USER}  ${TEST_PROJECT}
+    ${USER}=  Get User  admin  ${TEST_USER}  ${TEST_PROJECT}
+    Add Role To User  admin  ${ROLE.id}  ${USER.id}  ${TEST_PROJECT}
     Set Global Variable  ${userpass}
     ${resp}=  Get User  admin  ${TEST_USER}  ${TEST_PROJECT}
     Should Be Equal As Strings  ${resp.name}  ${TEST_USER}
