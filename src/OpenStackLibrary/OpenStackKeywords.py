@@ -161,3 +161,16 @@ class OpenStackKeywords(object):
             if role.name == role_name:
                 return role
         return None
+
+    def update_network_quota(self, alias, project_id, networks, subnets, ports, security_group, security_group_rule):
+        self.builtin.log('Updating network quota: %s' % project_id, 'DEBUG')
+        session = self._cache.switch(alias)
+        neutron = ntclient.Client(session=session)
+        quota = {"network": networks, "port": ports, "subnet": subnets, "security_group": security_group, "security_group_rule": security_group_rule}
+        neutron.update_quota(project_id, {'quota': quota})
+
+    def update_compute_quota(self, alias, project_id, instances, cores, ram):
+        self.builtin.log('Updating compute quota: %s' % project_id, 'DEBUG')
+        session = self._cache.switch(alias)
+        nova = nvclient.Client(session=session)
+        nova.quotas.update(project_id, instances=instances, cores=cores, ram=ram)
