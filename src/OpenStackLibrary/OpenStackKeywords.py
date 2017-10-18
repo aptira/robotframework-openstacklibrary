@@ -150,3 +150,13 @@ class OpenStackKeywords(object):
         session = self._cache.switch(alias)
         ks = ksclient.Client(session=session)
         ks.roles.grant(role, user=user, project=project)
+        
+    def get_role(self, alias, role_name):
+        self.builtin.log('Getting role: %s' % role_name, 'DEBUG')
+        session = self._cache.switch(alias)
+        ks = ksclient.Client(session=session)
+        roles = ks.roles.list()
+        for role in roles:
+            if role.name == role_name:
+                return role
+        return None
