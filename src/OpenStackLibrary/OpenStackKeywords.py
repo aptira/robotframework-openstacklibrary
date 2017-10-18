@@ -172,5 +172,5 @@ class OpenStackKeywords(object):
     def update_compute_quota(self, alias, project_id, instances, cores, ram):
         self.builtin.log('Updating compute quota: %s' % project_id, 'DEBUG')
         session = self._cache.switch(alias)
-        nova = nvclient.Client(session=session)
+        nova = nvclient.Client(NOVA_API_VERSION, session=session)
         nova.quotas.update(project_id, instances=instances, cores=cores, ram=ram)
