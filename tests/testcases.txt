@@ -61,10 +61,6 @@ User Login
     [Tags]  login
     Create Session  user    ${AUTH_URL}  ${TEST_USER}  ${userpass}  ${TEST_PROJECT}  ${TEST_DOMAIN}
 
-Server Creation
-    [Tags]  create
-    Create Servers  user  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  10  default  cirros login:  1200
-
 Network1 Creation
     [Tags]  create
     ${NETWORK1}=  Create Network  user  ${NETWORK1_NAME}
@@ -105,6 +101,10 @@ Subnet4 Creation
     ${SUBNET4}=  Create Subnet  user  ${NETWORK4['network']['id']}  ${SUBNET4_NAME}  ${SUBNET4_CIDR}
     Set Global Variable  ${SUBNET4}
 
+Server Creation
+    [Tags]  create
+    @{NETLIST} =    Create List    ${NETWORK1['network']['id']}    ${NETWORK2['network']['id']}    ${NETWORK3['network']['id']}  ${NETWORK4['network']['id']}
+    Create Servers  user  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  10  default  @{NETLIST}  cirros login:  1200
 
 Subnet4 Deletion
     [Tags]  delete

@@ -176,11 +176,14 @@ class OpenStackKeywords(object):
         nova = nvclient.Client(NOVA_API_VERSION, session=session)
         nova.quotas.update(project_id, instances=instances, cores=cores, ram=ram)
 
-    def create_servers(self, alias, server_name, image_uuid, flavor, count, security_group, console, timeout):
+    def create_servers(self, alias, server_name, image_uuid, flavor, count, security_group, networks, console, timeout):
         self.builtin.log('Creating servers: %s' % server_name, 'DEBUG')
         session = self._cache.switch(alias)
         nova = nvclient.Client(NOVA_API_VERSION, session=session)
-        kwargs = {"max_count": count, "min_count": count, "security_groups": [security_group]}
+        nets = []
+        for network in networks:
+            nets.append({"net-id":network})
+        kwargs = {"max_count": count, "min_count": count, "security_groups": [security_group], "nics": nets}
         servers = nova.servers.create(server_name, image_uuid, flavor, **kwargs)
         start_timestamp = int(datetime.datetime.now().strftime("%s"))
         current_timestamp = int(datetime.datetime.now().strftime("%s"))
