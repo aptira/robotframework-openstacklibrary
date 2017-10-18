@@ -63,7 +63,7 @@ User Login
 
 Server Creation
     [Tags]  create
-    Create Servers  admin  user  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  10  default  cirros login:  1200
+    Create Servers  user  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  10  default  cirros login:  1200
 
 Network1 Creation
     [Tags]  create
