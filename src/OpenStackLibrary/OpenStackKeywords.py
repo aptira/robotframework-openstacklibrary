@@ -18,7 +18,7 @@ from neutronclient.v2_0 import client as ntclient
 NOVA_API_VERSION=2
 
 class OpenStackKeywords(object):
-    ROBOT_LIBRARY_SCOPE = 'Global'
+    ROBOT_LIBRARY_SCOPE = 'GLOBAL'
     
     def __init__(self):
         self._cache = robot.utils.ConnectionCache('No sessions created')
@@ -144,3 +144,9 @@ class OpenStackKeywords(object):
         session = self._cache.switch(alias)
         neutron = ntclient.Client(session=session)
         neutron.delete_subnet(network_id)
+
+    def add_role_to_user(self, alias, role, user, project):
+        self.builtin.log('Adding role %s to user %s: %s' % (role,user), 'DEBUG')
+        session = self._cache.switch(alias)
+        ks = ksclient.Client(session=session)
+        ks.roles.grant(role, user=user, project=project)

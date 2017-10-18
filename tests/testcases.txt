@@ -13,6 +13,7 @@ ${USERNAME}            %{OS_USERNAME}
 ${PASSWORD}            %{OS_PASSWORD}
 ${PROJECT_NAME}        %{OS_PROJECT_NAME}
 ${DOMAIN_NAME}         %{OS_PROJECT_DOMAIN_NAME}
+${ROLE}                _member_
 ${TEST_PROJECT}        testprj
 ${TEST_DOMAIN}         default
 ${TEST_USER}           testuser
@@ -45,6 +46,7 @@ Flavor Creation
 User Creation
     [Tags]  create
     ${userpass}=  Create User  admin  ${TEST_USER}  ${TEST_PROJECT}  ${TEST_DOMAIN}
+    Add Role To User  admin  ${ROLE}  ${TEST_USER}  ${TEST_PROJECT}
     Set Global Variable  ${userpass}
     ${resp}=  Get User  admin  ${TEST_USER}  ${TEST_PROJECT}
     Should Be Equal As Strings  ${resp.name}  ${TEST_USER}
