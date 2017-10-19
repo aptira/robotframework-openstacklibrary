@@ -286,4 +286,9 @@ class OpenStackKeywords(object):
         self.builtin.log('Getting compute usage for project: %s' % project_id, 'DEBUG')
         session = self._cache.switch(alias)
         nova = nvclient.Client(NOVA_API_VERSION, session=session)
-        return nova.limits.get(tenant_id=project_id)
+        limits = nova.limits.get(tenant_id=project_id)
+        rt = {}
+        for limit in limits.absolute:
+            rt[limit.name] = limit.value
+        return rt
+            

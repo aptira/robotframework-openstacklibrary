@@ -123,8 +123,8 @@ Server Verification
 Quota Verification
     [Tags]  check
     ${USAGE} =   Get Compute Usage  admin  ${PROJECT.id}
-    Should Be Equal As Integers    ${USAGE.absolute.totalRAMUsed}   ${TOTAL_RAM}
-    Should Be Equal As Integers    ${USAGE.absolute.totalCoresUsed}   ${TOTAL_CORES}
+    Should Be Equal As Integers    ${USAGE['totalRAMUsed']}   ${TOTAL_RAM}
+    Should Be Equal As Integers    ${USAGE['totalCoresUsed']}   ${TOTAL_CORES}
     @{NETWORKS}=   List Networks   user
     ${NETWORKS_LENGTH} =  Get Length  ${NETWORKS}
     Should Be Equal As Integers     ${NETWORKS_LENGTH}   ${TOTAL_NETWORKS}
