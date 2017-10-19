@@ -206,12 +206,12 @@ class OpenStackKeywords(object):
                 self.builtin.log('server: %s, status: %s' % (server.id, server.status), 'DEBUG')
                 if server.status == "ACTIVE":
                     console_log = server.get_console_output()
-                    self.builtin.log('console log of %s: %s' % (server.id, console_log[-30:]), 'DEBUG')
+                    #self.builtin.log('console log of %s: %s' % (server.id, console_log[-30:]), 'DEBUG')
                     if console in console_log:
-                        self.builtin.log('%s is active and booted.' % server.id, 'DEBUG')
+                        self.builtin.log('%s is active and booted. time left: %s' % (server.id, current_timestamp - start_timestamp), 'DEBUG')
                         ready.append(server)
                 elif server.status == "ERROR" or getattr(server,"OS-EXT-STS:vm_state") == "error":
-                    self.builtin.log('%s is in error state.' % server.id, 'DEBUG')
+                    self.builtin.log('%s is in error state. time left: %s' % (server.id, current_timestamp - start_timestamp), 'DEBUG')
                     errors.append(server)
             for server in ready:
                 if server in servers:
@@ -243,7 +243,7 @@ class OpenStackKeywords(object):
                     self.builtin.log('delete server %s ...' % server.id, 'DEBUG')
                     nova.servers.delete(server)
                 except NotFound as ex:
-                    self.builtin.log('%s is deleted.' % server.id, 'DEBUG')
+                    self.builtin.log('%s is deleted. time left: %s' % (server.id, current_timestamp - start_timestamp), 'DEBUG')
                     deleted.append(server)
             for server in deleted:
                 if server in servers:
