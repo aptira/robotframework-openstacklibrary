@@ -137,6 +137,36 @@ class OpenStackKeywords(object):
         subnet = {"network_id": network_id, 'name': subnet_name, 'ip_version': ip_version, 'cidr': cidr, 'enable_dhcp': enable_dhcp}
         return neutron.create_subnet({'subnet': subnet})
 
+    def list_networks(self, alias):
+        self.builtin.log('Listing networks', 'DEBUG')
+        session = self._cache.switch(alias)
+        neutron = ntclient.Client(session=session)
+        return neutron.list_networks()
+
+    def list_subnets(self, alias):
+        self.builtin.log('Listing subnets', 'DEBUG')
+        session = self._cache.switch(alias)
+        neutron = ntclient.Client(session=session)
+        return neutron.list_subnets()
+
+    def list_ports(self, alias):
+        self.builtin.log('Listing ports', 'DEBUG')
+        session = self._cache.switch(alias)
+        neutron = ntclient.Client(session=session)
+        return neutron.list_ports()
+
+    def list_security_groups(self, alias):
+        self.builtin.log('Listing security groups', 'DEBUG')
+        session = self._cache.switch(alias)
+        neutron = ntclient.Client(session=session)
+        return neutron.list_security_groups()
+
+    def list_security_group_rules(self, alias):
+        self.builtin.log('Listing security group rules', 'DEBUG')
+        session = self._cache.switch(alias)
+        neutron = ntclient.Client(session=session)
+        return neutron.list_security_group_rules()
+
     def delete_subnet(self, alias, subnet_id):
         self.builtin.log('Deleting subnet: %s' % subnet_id, 'DEBUG')
         session = self._cache.switch(alias)

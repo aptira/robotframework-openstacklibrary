@@ -35,13 +35,18 @@ ${IMAGE_UUID}           57ff0f0a-a031-4650-a8dd-4721ed0a4b65
 ${TOTAL_CORES}          10
 ${TOTAL_INSTANCES}      10
 ${TOTAL_RAM}            20480
+${TOTAL_NETWORKS}       4
+${TOTAL_SUBNETS}        10
+${TOTAL_PORTS}          100
+${TOTAL_SEC_GROUPS}     1
+${TOTAL_SEC_GROUP_RULES}   8
 
 *** Test Cases ***
 Project Creation
     [Tags]  create
     ${PROJECT}=  Create Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
     Set Global Variable  ${PROJECT}
-    Update Network Quota  admin  ${PROJECT.id}  10  10  100  1  8
+    Update Network Quota  admin  ${PROJECT.id}  ${TOTAL_NETWORKS}  ${TOTAL_SUBNETS}  ${TOTAL_PORTS}  ${TOTAL_SEC_GROUPS}  ${TOTAL_SEC_GROUP_RULES}
     Update Compute Quota  admin  ${PROJECT.id}  ${TOTAL_INSTANCES}  ${TOTAL_CORES}  ${TOTAL_RAM}
     ${resp}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
     Should Be Equal As Strings  ${resp.name}  ${TEST_PROJECT}
@@ -118,6 +123,23 @@ Server Verification
 Quota Verification
     [Tags]  check
     ${USAGE} =   Get Compute Usage  admin  ${PROJECT.id}
+    Should Be Equal As Integers    ${USAGE['limits']['absolute']['totalRAMUsed']}   ${TOTAL_RAM}
+    Should Be Equal As Integers    ${USAGE['limits']['absolute']['totalCoresUsed']}   ${TOTAL_CORES}
+    @{NETWORKS}=   List Networks   user
+    ${NETWORKS_LENGTH} =  Get Length  ${NETWORKS}
+    Should Be Equal As Integers     ${NETWORKS_LENGTH}   ${TOTAL_NETWORKS}
+    @{SUBNETS}=   List Subnets   user
+    ${SUBNETS_LENGTH} =  Get Length  ${SUBNETS}
+    Should Be Equal As Integers     ${SUBNETS_LENGTH}   ${TOTAL_SUBNETS}
+    @{PORTS}=   List Ports   user
+    ${PORTS_LENGTH} =  Get Length  ${PORTS}
+    Should Be True     ${PORTS_LENGTH} <= ${TOTAL_PORTS}
+    @{SEC_GROUPS}=   List Security Groups   user
+    ${SEC_GROUPS_LENGTH} =  Get Length  ${SEC_GROUPS}
+    Should Be True     ${SEC_GROUPS_LENGTH} <= ${TOTAL_SEC_GROUPS}
+    @{SEC_GROUP_RULES}=   List Security Group Rules   user
+    ${SEC_GROUP_RULES_LENGTH} =  Get Length  ${SEC_GROUP_RULES}
+    Should Be True     ${SEC_GROUP_RULES_LENGTH} <= ${TOTAL_SEC_GROUP_RULES}
     
 Server Deletion
     [Tags]  delete
