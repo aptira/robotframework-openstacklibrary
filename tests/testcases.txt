@@ -112,6 +112,7 @@ Server Verification
     
 Server Deletion
     [Tags]  delete
+    Delete Servers   user  ${SERVER_NAME}  300
 
 Subnet4 Deletion
     [Tags]  delete
