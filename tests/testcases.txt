@@ -125,19 +125,19 @@ Quota Verification
     ${USAGE} =   Get Compute Usage  admin  ${PROJECT.id}
     Should Be Equal As Integers    ${USAGE['totalRAMUsed']}   ${TOTAL_RAM}
     Should Be Equal As Integers    ${USAGE['totalCoresUsed']}   ${TOTAL_CORES}
-    ${NETWORKS}=   List Networks   user
+    ${NETWORKS}=   List Networks   user  ${PROJECT.id}
     ${NETWORKS_LENGTH} =  Get Length  ${NETWORKS['networks']}
     Should Be Equal As Integers     ${NETWORKS_LENGTH}   ${TOTAL_NETWORKS}
-    ${SUBNETS}=   List Subnets   user
+    ${SUBNETS}=   List Subnets   user  ${PROJECT.id}
     ${SUBNETS_LENGTH} =  Get Length  ${SUBNETS['subnets']}
     Should Be Equal As Integers     ${SUBNETS_LENGTH}   ${TOTAL_SUBNETS}
-    ${PORTS}=   List Ports   user
+    ${PORTS}=   List Ports   user  ${PROJECT.id}
     ${PORTS_LENGTH} =  Get Length  ${PORTS['prots']}
     Should Be True     ${PORTS_LENGTH} <= ${TOTAL_PORTS}
-    ${SEC_GROUPS}=   List Security Groups   user
+    ${SEC_GROUPS}=   List Security Groups   user  ${PROJECT.id}
     ${SEC_GROUPS_LENGTH} =  Get Length  ${SEC_GROUPS['security_groups']}
     Should Be True     ${SEC_GROUPS_LENGTH} <= ${TOTAL_SEC_GROUPS}
-    ${SEC_GROUP_RULES}=   List Security Group Rules   user
+    ${SEC_GROUP_RULES}=   List Security Group Rules   user  ${PROJECT.id}
     ${SEC_GROUP_RULES_LENGTH} =  Get Length  ${SEC_GROUP_RULES['security_group_rules']}
     Should Be True     ${SEC_GROUP_RULES_LENGTH} <= ${TOTAL_SEC_GROUP_RULES}
     
