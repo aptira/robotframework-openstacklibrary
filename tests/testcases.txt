@@ -132,7 +132,7 @@ Quota Verification
     ${SUBNETS_LENGTH} =  Get Length  ${SUBNETS['subnets']}
     Should Be Equal As Integers     ${SUBNETS_LENGTH}   ${TOTAL_SUBNETS}
     ${PORTS}=   List Ports   user  ${PROJECT.id}
-    ${PORTS_LENGTH} =  Get Length  ${PORTS['prots']}
+    ${PORTS_LENGTH} =  Get Length  ${PORTS['ports']}
     Should Be True     ${PORTS_LENGTH} <= ${TOTAL_PORTS}
     ${SEC_GROUPS}=   List Security Groups   user  ${PROJECT.id}
     ${SEC_GROUPS_LENGTH} =  Get Length  ${SEC_GROUPS['security_groups']}
