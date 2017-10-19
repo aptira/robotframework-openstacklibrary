@@ -203,7 +203,7 @@ class OpenStackKeywords(object):
             for server in servers:
                 if server.status == "ACTIVE":
                     console_log = server.get_console_output()
-                    if console_log.ends_with(console):
+                    if console in console_log:
                         self.builtin.log('%s is active and booted.' % server.id, 'DEBUG')
                         ready.append(server)
                 elif server.status == "ERROR":
