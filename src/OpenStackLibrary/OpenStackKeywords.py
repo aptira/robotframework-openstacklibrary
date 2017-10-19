@@ -137,35 +137,40 @@ class OpenStackKeywords(object):
         subnet = {"network_id": network_id, 'name': subnet_name, 'ip_version': ip_version, 'cidr': cidr, 'enable_dhcp': enable_dhcp}
         return neutron.create_subnet({'subnet': subnet})
 
-    def list_networks(self, alias):
+    def list_networks(self, alias, project_id):
         self.builtin.log('Listing networks', 'DEBUG')
         session = self._cache.switch(alias)
         neutron = ntclient.Client(session=session)
-        return neutron.list_networks()
+        query = {"project_id": project_id}
+        return neutron.list_networks(retrieve_all=True, **query)
 
-    def list_subnets(self, alias):
+    def list_subnets(self, alias, project_id):
         self.builtin.log('Listing subnets', 'DEBUG')
         session = self._cache.switch(alias)
         neutron = ntclient.Client(session=session)
-        return neutron.list_subnets()
+        query = {"project_id": project_id}
+        return neutron.list_subnets(retrieve_all=True, **query)
 
-    def list_ports(self, alias):
+    def list_ports(self, alias, project_id):
         self.builtin.log('Listing ports', 'DEBUG')
         session = self._cache.switch(alias)
         neutron = ntclient.Client(session=session)
-        return neutron.list_ports()
+        query = {"project_id": project_id}
+        return neutron.list_ports(retrieve_all=True, **query)
 
-    def list_security_groups(self, alias):
+    def list_security_groups(self, alias, project_id):
         self.builtin.log('Listing security groups', 'DEBUG')
         session = self._cache.switch(alias)
         neutron = ntclient.Client(session=session)
-        return neutron.list_security_groups()
+        query = {"project_id": project_id}
+        return neutron.list_security_groups(retrieve_all=True, **query)
 
-    def list_security_group_rules(self, alias):
+    def list_security_group_rules(self, alias, project_id):
         self.builtin.log('Listing security group rules', 'DEBUG')
         session = self._cache.switch(alias)
         neutron = ntclient.Client(session=session)
-        return neutron.list_security_group_rules()
+        query = {"project_id": project_id}
+        return neutron.list_security_group_rules(retrieve_all=True, **query)
 
     def delete_subnet(self, alias, subnet_id):
         self.builtin.log('Deleting subnet: %s' % subnet_id, 'DEBUG')
