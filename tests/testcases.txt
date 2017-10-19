@@ -105,7 +105,13 @@ Server Creation
     [Tags]  create
     @{NETLIST} =    Create List    ${NETWORK1['network']['id']}    ${NETWORK2['network']['id']}    ${NETWORK3['network']['id']}  ${NETWORK4['network']['id']}
     Create Servers  user  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  10  default  ${NETLIST}
+
+Server Verification
+    [Tags]  check
     Check Servers   user  ${SERVER_NAME}  cirros login:  600
+    
+Server Deletion
+    [Tags]  delete
 
 Subnet4 Deletion
     [Tags]  delete

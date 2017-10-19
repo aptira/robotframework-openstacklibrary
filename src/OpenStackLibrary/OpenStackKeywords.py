@@ -4,6 +4,7 @@ import random
 import string
 import logging
 import datetime
+import time
 
 import robot
 from robot.api import logger
@@ -203,6 +204,7 @@ class OpenStackKeywords(object):
             for server in servers:
                 if server.status == "ACTIVE":
                     console_log = server.get_console_output()
+                    self.builtin.log('console log of %s: %s' % (server.id, console_log[-30:]), 'DEBUG')
                     if console in console_log:
                         self.builtin.log('%s is active and booted.' % server.id, 'DEBUG')
                         ready.append(server)
@@ -210,17 +212,27 @@ class OpenStackKeywords(object):
                     self.builtin.log('%s is in error state.' % server.id, 'DEBUG')
                     errors.append(server)
                 server.update()
+            time.sleep(1)
             current_timestamp = int(datetime.datetime.now().strftime("%s"))
         failed = False
         if len(errors) + len(servers) > 0:
             self.builtin.log('%s servers are in error state.' % len(errors), 'ERROR')
         if len(errors) + len(ready) < len(servers):
-            self.builtin.log('%s servers are timeout.' % (len(servers)-len(errors)-len(ready)), 'ERROR')
+            self.builtin.log('Creation of %s servers has timed out.' % (len(servers)-len(errors)-len(ready)), 'ERROR')
+        if failed:
+            raise Exception
+
+    def delete_servers(self, alias, server_name, timeout):
+        self.builtin.log('Deleting servers: %s' % server_name, 'DEBUG')
+        session = self._cache.switch(alias)
+        nova = nvclient.Client(NOVA_API_VERSION, session=session)
+        servers = nova.servers.list(search_opts={"name": server_name + "-*"})
         start_timestamp = int(datetime.datetime.now().strftime("%s"))
         current_timestamp = int(datetime.datetime.now().strftime("%s"))
         deleted = []
-        while current_timestamp - start_timestamp < timeout*1000:
+        while current_timestamp - start_timestamp < timeout:
             for server in servers:
+                self.builtin.log('delete server %s ...' % server.id, 'DEBUG')
                 nova.servers.delete(server)
                 try:
                     nova.servers.update(server)
@@ -229,6 +241,5 @@ class OpenStackKeywords(object):
                     deleted.append(server)
             for server in deleted:
                 servers.remove(server)
+            time.sleep(1)
             current_timestamp = int(datetime.datetime.now().strftime("%s"))
-        if failed:
-            raise Exception
