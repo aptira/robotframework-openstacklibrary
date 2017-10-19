@@ -114,7 +114,10 @@ Server Verification
     @{INSTANCES}=  Check Servers   user  ${SERVER_NAME}  cirros login:  600
     ${length} =  Get Length  ${INSTANCES}
     Should Be Equal As Integers     ${length}   ${TOTAL_INSTANCES}
-    ${USAGE} =   Get Compute Usage  user  ${PROJECT.id}
+
+Quota Verification
+    [Tags]  check
+    ${USAGE} =   Get Compute Usage  admin  ${PROJECT.id}
     
 Server Deletion
     [Tags]  delete
