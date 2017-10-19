@@ -219,7 +219,7 @@ class OpenStackKeywords(object):
             for server in errors:
                 if server in servers:
                     servers.remove(server)
-            time.sleep(5)
+            time.sleep(10)
             current_timestamp = int(datetime.datetime.now().strftime("%s"))
         failed = False
         if len(errors) > 0:
@@ -239,14 +239,14 @@ class OpenStackKeywords(object):
         deleted = []
         while current_timestamp - start_timestamp < timeout:
             for server in servers:
-                self.builtin.log('delete server %s ...' % server.id, 'DEBUG')
-                nova.servers.delete(server)
                 try:
-                    nova.servers.update(server)
+                    self.builtin.log('delete server %s ...' % server.id, 'DEBUG')
+                    nova.servers.delete(server)
                 except NotFound as ex:
                     self.builtin.log('%s is deleted.' % server.id, 'DEBUG')
                     deleted.append(server)
             for server in deleted:
-                servers.remove(server)
-            time.sleep(1)
+                if server in servers:
+                    servers.remove(server)
+            time.sleep(10)
             current_timestamp = int(datetime.datetime.now().strftime("%s"))
