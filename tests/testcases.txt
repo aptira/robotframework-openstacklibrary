@@ -104,7 +104,7 @@ Subnet4 Creation
 Server Creation
     [Tags]  create
     @{NETLIST} =    Create List    ${NETWORK1['network']['id']}    ${NETWORK2['network']['id']}    ${NETWORK3['network']['id']}  ${NETWORK4['network']['id']}
-    Create Servers  user  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  10  default  @{NETLIST}  cirros login:  1200
+    Create Servers  user  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  10  default  ${NETLIST}  cirros login:  1200
 
 Subnet4 Deletion
     [Tags]  delete
