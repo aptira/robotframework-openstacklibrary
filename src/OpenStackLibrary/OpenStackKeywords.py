@@ -201,24 +201,29 @@ class OpenStackKeywords(object):
         ready = []
         errors = []
         while current_timestamp - start_timestamp < timeout:
-            for server in servers:
+            for svr in servers:
+                server = nova.servers.get(svr.id)
+                self.builtin.log('server: %s, status: %s' % (server.id, server.status), 'DEBUG')
                 if server.status == "ACTIVE":
                     console_log = server.get_console_output()
                     self.builtin.log('console log of %s: %s' % (server.id, console_log[-30:]), 'DEBUG')
                     if console in console_log:
                         self.builtin.log('%s is active and booted.' % server.id, 'DEBUG')
                         ready.append(server)
-                elif server.status == "ERROR":
+                elif server.status == "ERROR" or getattr(server,"OS-EXT-STS:vm_state") == "error":
                     self.builtin.log('%s is in error state.' % server.id, 'DEBUG')
                     errors.append(server)
-                server.update()
-            time.sleep(1)
+            for server in ready:
+                servers.remove(server)
+            for server in errors:
+                servers.remove(server)
+            time.sleep(5)
             current_timestamp = int(datetime.datetime.now().strftime("%s"))
         failed = False
-        if len(errors) + len(servers) > 0:
+        if len(errors) > 0:
             self.builtin.log('%s servers are in error state.' % len(errors), 'ERROR')
-        if len(errors) + len(ready) < len(servers):
-            self.builtin.log('Creation of %s servers has timed out.' % (len(servers)-len(errors)-len(ready)), 'ERROR')
+        if len(servers) > 0:
+            self.builtin.log('Creation of %s servers has timed out.' % len(servers), 'ERROR')
         if failed:
             raise Exception
 
