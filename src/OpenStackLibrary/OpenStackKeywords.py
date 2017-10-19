@@ -211,7 +211,7 @@ class OpenStackKeywords(object):
                         self.builtin.log('%s is active and booted. time left: %s' % (server.id, current_timestamp - start_timestamp), 'DEBUG')
                         ready.append(server)
                 elif server.status == "ERROR" or getattr(server,"OS-EXT-STS:vm_state") == "error":
-                    self.builtin.log('%s is in error state. time left: %s' % (server.id, current_timestamp - start_timestamp), 'DEBUG')
+                    self.builtin.log('%s is in error state. time elapsed: %s' % (server.id, current_timestamp - start_timestamp), 'DEBUG')
                     errors.append(server)
             for server in ready:
                 if server in servers:
@@ -228,6 +228,7 @@ class OpenStackKeywords(object):
             self.builtin.log('Creation of %s servers has timed out.' % len(servers), 'ERROR')
         if failed:
             raise Exception
+        return ready
 
     def delete_servers(self, alias, server_name, timeout):
         self.builtin.log('Deleting servers: %s' % server_name, 'DEBUG')
@@ -243,10 +244,16 @@ class OpenStackKeywords(object):
                     self.builtin.log('delete server %s ...' % server.id, 'DEBUG')
                     nova.servers.delete(server)
                 except NotFound as ex:
-                    self.builtin.log('%s is deleted. time left: %s' % (server.id, current_timestamp - start_timestamp), 'DEBUG')
+                    self.builtin.log('%s is deleted. time elapsed: %s' % (server.id, current_timestamp - start_timestamp), 'DEBUG')
                     deleted.append(server)
             for server in deleted:
                 if server in servers:
                     servers.remove(server)
             time.sleep(10)
             current_timestamp = int(datetime.datetime.now().strftime("%s"))
+
+    def get_compute_usage(self, alias, project_id):
+        self.builtin.log('Getting compute usage for project: %s' % project_id, 'DEBUG')
+        session = self._cache.switch(alias)
+        nova = nvclient.Client(NOVA_API_VERSION, session=session)
+        return nova.limits.get(tenant_id=project_id)

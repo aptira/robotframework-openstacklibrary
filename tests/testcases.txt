@@ -32,6 +32,9 @@ ${SUBNET4_NAME}         testsubnet4
 ${SUBNET4_CIDR}         192.168.4.0/24
 ${SERVER_NAME}          testserver
 ${IMAGE_UUID}           57ff0f0a-a031-4650-a8dd-4721ed0a4b65
+${TOTAL_CORES}          10
+${TOTAL_INSTANCES}      10
+${TOTAL_RAM}            20480
 
 *** Test Cases ***
 Project Creation
@@ -39,7 +42,7 @@ Project Creation
     ${PROJECT}=  Create Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
     Set Global Variable  ${PROJECT}
     Update Network Quota  admin  ${PROJECT.id}  10  10  100  1  8
-    Update Compute Quota  admin  ${PROJECT.id}  10  10  20480
+    Update Compute Quota  admin  ${PROJECT.id}  ${TOTAL_INSTANCES}  ${TOTAL_CORES}  ${TOTAL_RAM}
     ${resp}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
     Should Be Equal As Strings  ${resp.name}  ${TEST_PROJECT}
 
@@ -103,12 +106,15 @@ Subnet4 Creation
 
 Server Creation
     [Tags]  create
-    @{NETLIST} =    Create List    ${NETWORK1['network']['id']}    ${NETWORK2['network']['id']}    ${NETWORK3['network']['id']}  ${NETWORK4['network']['id']}
+    @{NETLIST}=    Create List    ${NETWORK1['network']['id']}    ${NETWORK2['network']['id']}    ${NETWORK3['network']['id']}  ${NETWORK4['network']['id']}
     Create Servers  user  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  10  default  ${NETLIST}
 
 Server Verification
     [Tags]  check
-    Check Servers   user  ${SERVER_NAME}  cirros login:  600
+    @{INSTANCES}=  Check Servers   user  ${SERVER_NAME}  cirros login:  600
+    ${length} =  Get Length  ${INSTANCES}
+    Should Be Equal As Integers     ${length}   ${TOTAL_INSTANCES}
+    ${USAGE} =   Get Compute Usage  user  ${PROJECT.id}
     
 Server Deletion
     [Tags]  delete
