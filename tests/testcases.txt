@@ -36,7 +36,7 @@ ${TOTAL_CORES}          10
 ${TOTAL_INSTANCES}      10
 ${TOTAL_RAM}            20480
 ${TOTAL_NETWORKS}       4
-${TOTAL_SUBNETS}        10
+${TOTAL_SUBNETS}        4
 ${TOTAL_PORTS}          100
 ${TOTAL_SEC_GROUPS}     1
 ${TOTAL_SEC_GROUP_RULES}   8
