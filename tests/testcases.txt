@@ -31,7 +31,7 @@ ${SUBNET3_CIDR}         192.168.3.0/24
 ${SUBNET4_NAME}         testsubnet4
 ${SUBNET4_CIDR}         192.168.4.0/24
 ${SERVER_NAME}          testserver
-${IMAGE_UUID}           52165dd0-6204-4e6a-b1d4-67000025cafe
+${IMAGE_UUID}           57ff0f0a-a031-4650-a8dd-4721ed0a4b65
 
 *** Test Cases ***
 Project Creation
