@@ -214,9 +214,11 @@ class OpenStackKeywords(object):
                     self.builtin.log('%s is in error state.' % server.id, 'DEBUG')
                     errors.append(server)
             for server in ready:
-                servers.remove(server)
+                if server in servers:
+                    servers.remove(server)
             for server in errors:
-                servers.remove(server)
+                if server in servers:
+                    servers.remove(server)
             time.sleep(5)
             current_timestamp = int(datetime.datetime.now().strftime("%s"))
         failed = False
