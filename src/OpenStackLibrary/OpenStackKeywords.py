@@ -200,7 +200,7 @@ class OpenStackKeywords(object):
         current_timestamp = int(datetime.datetime.now().strftime("%s"))
         ready = []
         errors = []
-        while current_timestamp - start_timestamp < timeout:
+        while current_timestamp - start_timestamp < timeout and len(servers) > 0:
             for svr in servers:
                 server = nova.servers.get(svr.id)
                 self.builtin.log('server: %s, status: %s' % (server.id, server.status), 'DEBUG')
@@ -237,7 +237,7 @@ class OpenStackKeywords(object):
         start_timestamp = int(datetime.datetime.now().strftime("%s"))
         current_timestamp = int(datetime.datetime.now().strftime("%s"))
         deleted = []
-        while current_timestamp - start_timestamp < timeout:
+        while current_timestamp - start_timestamp < timeout and len(servers) > 0:
             for server in servers:
                 try:
                     self.builtin.log('delete server %s ...' % server.id, 'DEBUG')
