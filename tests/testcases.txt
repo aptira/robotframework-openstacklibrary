@@ -126,13 +126,13 @@ Quota Verification
     Should Be Equal As Integers    ${USAGE['totalRAMUsed']}   ${TOTAL_RAM}
     Should Be Equal As Integers    ${USAGE['totalCoresUsed']}   ${TOTAL_CORES}
     @{NETWORKS}=   List Networks   user
-    ${NETWORKS_LENGTH} =  Get Length  ${NETWORKS}
+    ${NETWORKS_LENGTH} =  Get Length  ${NETWORKS['networks']}
     Should Be Equal As Integers     ${NETWORKS_LENGTH}   ${TOTAL_NETWORKS}
     @{SUBNETS}=   List Subnets   user
-    ${SUBNETS_LENGTH} =  Get Length  ${SUBNETS}
+    ${SUBNETS_LENGTH} =  Get Length  ${SUBNETS['subnets']}
     Should Be Equal As Integers     ${SUBNETS_LENGTH}   ${TOTAL_SUBNETS}
     @{PORTS}=   List Ports   user
-    ${PORTS_LENGTH} =  Get Length  ${PORTS}
+    ${PORTS_LENGTH} =  Get Length  ${PORTS['prots']}
     Should Be True     ${PORTS_LENGTH} <= ${TOTAL_PORTS}
     @{SEC_GROUPS}=   List Security Groups   user
     ${SEC_GROUPS_LENGTH} =  Get Length  ${SEC_GROUPS}
