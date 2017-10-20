@@ -75,16 +75,16 @@ User Login
 Stack Creation
     [Tags]  create
     ${TEMPLATE_CONTENT}=   Get File   ${HEAT_TEMPLATE_FILE}
-    @{STACKS}=  Create Stacks    user  ${TEMPLATE_CONTENT}  ${STACK_NAME}  ${TOTAL_STACKS}
+    @{STACKS}=  Create Stacks    user  ${PROJECT.id}  ${TEMPLATE_CONTENT}  ${STACK_NAME}  ${TOTAL_STACKS}
 
 Stack Verification
     [Tags]  check
-    @{STACKS_NUM}=  Check Stacks   user  ${STACK_NAME}  600
+    @{STACKS_NUM}=  Check Stacks   user  ${PROJECT.id}  ${STACK_NAME}  600
     Should Be Equal As Integers     ${STACKS_NUM}   ${TOTAL_STACKS}
 
 Stack Deletion
     [Tags]  delete
-    Delete Stacks   user  ${STACK_NAME}  300
+    Delete Stacks   user  ${PROJECT.id}  ${STACK_NAME}  300
 
 Network1 Creation
     [Tags]  create

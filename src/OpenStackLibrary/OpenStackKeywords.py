@@ -299,25 +299,26 @@ class OpenStackKeywords(object):
             rt[limit.name] = limit.value
         return rt
 
-    def create_stacks(self, alias, template_file, stack_name, num_stacks = 1):
+    def create_stacks(self, alias, project_id, template_file, stack_name, num_stacks = 1):
         self.builtin.log('Creating %s stacks' % num_stacks, 'DEBUG')
         session = self._cache.switch(alias)
         heat = htclient.Client(HEAT_API_VERSION, session=session)
         stacks=[]
         for i in range(1,int(num_stacks)):
-            body = {'stack_name': stack_name+'-'+str(i), 'files': {'template.yaml': template_file}}
+            body = {'tenant_id': project_id, 'stack_name': stack_name+'-'+str(i), 'files': {'template.yaml': template_file}}
             stacks.append(heat.stacks.create(**body))
         return stacks
     
-    def check_stacks(self, alias, stack_name, timeout):
+    def check_stacks(self, alias, project_id, stack_name, timeout):
         self.builtin.log('Checking stacks: %s' % stack_name, 'DEBUG')
         session = self._cache.switch(alias)
         heat = htclient.Client(HEAT_API_VERSION, session=session)
         start_timestamp = int(datetime.datetime.now().strftime("%s"))
         current_timestamp = int(datetime.datetime.now().strftime("%s"))
         completed = False
+        body = {'tenant_id': project_id}
         while current_timestamp - start_timestamp < timeout and not completed:
-            stacks = heat.stacks.list()
+            stacks = heat.stacks.list(**body)
             total_stacks = 0
             completed_stacks = 0
             for stack in stacks:
@@ -334,15 +335,16 @@ class OpenStackKeywords(object):
             raise Exception
         return completed_stacks
                 
-    def delete_stacks(self, alias, stack_name, timeout):
+    def delete_stacks(self, alias, project_id, stack_name, timeout):
         self.builtin.log('Deleting stacks: %s' % stack_name, 'DEBUG')
         session = self._cache.switch(alias)
         heat = htclient.Client(HEAT_API_VERSION, session=session)
         start_timestamp = int(datetime.datetime.now().strftime("%s"))
         current_timestamp = int(datetime.datetime.now().strftime("%s"))
         completed = False
+        body = {'tenant_id': project_id}
         while current_timestamp - start_timestamp < timeout and not completed:
-            stacks = heat.stacks.list()
+            stacks = heat.stacks.list(**body)
             total_stacks = 0
             for stack in stacks:
                 if stack.stack_name.starts_with(stack_name+'-'):
