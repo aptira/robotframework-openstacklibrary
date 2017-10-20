@@ -86,7 +86,7 @@ Stack Creation
 
 Stack Verification
     [Tags]  check
-    @{STACKS_NUM}=  Check Stacks   user  ${PROJECT.id}  ${STACK_NAME}  600
+    ${STACKS_NUM}=  Check Stacks   user  ${PROJECT.id}  ${STACK_NAME}  600
     Should Be Equal As Integers     ${STACKS_NUM}   ${TOTAL_STACKS}
 
 Stack Deletion
