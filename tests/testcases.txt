@@ -13,7 +13,8 @@ ${USERNAME}            %{OS_USERNAME}
 ${PASSWORD}            %{OS_PASSWORD}
 ${PROJECT_NAME}        %{OS_PROJECT_NAME}
 ${DOMAIN_NAME}         %{OS_PROJECT_DOMAIN_NAME}
-${ROLE_NAME}           _member_
+${MEMBER_ROLE_NAME}    _member_
+${HEAT_ROLE_NAME}      heat-stack-owner
 ${TEST_PROJECT}        testprj
 ${TEST_DOMAIN}         default
 ${TEST_USER}           testuser
@@ -62,9 +63,11 @@ Flavor Creation
 User Creation
     [Tags]  create
     ${USER}=  Create User  admin  ${TEST_USER}  ${TEST_PROJECT}  ${TEST_DOMAIN}  ${EMPTY}  \${userpass}
-    ${ROLE}=  Get Role  admin  ${ROLE_NAME}
     ${PROJECT}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
-    Add Role To User  admin  ${ROLE.id}  ${USER.id}  ${PROJECT.id}
+    ${MEMBER_ROLE}=  Get Role  admin  ${MEMBER_ROLE_NAME}
+    Add Role To User  admin  ${MEMBER_ROLE.id}  ${USER.id}  ${PROJECT.id}
+    ${HEAT_ROLE}=  Get Role  admin  ${HEAT_ROLE_NAME}
+    Add Role To User  admin  ${HEAT_ROLE.id}  ${USER.id}  ${PROJECT.id}
     ${resp}=  Get User  admin  ${TEST_USER}  ${TEST_PROJECT}
     Should Be Equal As Strings  ${resp.name}  ${TEST_USER}
 

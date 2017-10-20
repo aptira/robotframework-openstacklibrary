@@ -302,17 +302,17 @@ class OpenStackKeywords(object):
     def create_stacks(self, alias, project_id, template_file, stack_name, num_stacks = 1):
         self.builtin.log('Creating %s stacks' % num_stacks, 'DEBUG')
         session = self._cache.switch(alias)
-        heat = htclient.Client(HEAT_API_VERSION, session=session)
+        heat = htclient.Client(HEAT_API_VERSION, session=session, service_type='orchestration')
         stacks=[]
         for i in range(1,int(num_stacks)):
-            body = {'tenant_id': project_id, 'stack_name': stack_name+'-'+str(i), 'files': {'template.yaml': template_file}}
-            stacks.append(heat.stacks.create(**body))
+            fields = {'tenant_id': project_id, 'stack_name': stack_name+'-'+str(i), 'files': {'template.yaml': template_file}}
+            stacks.append(heat.stacks.create(**fields))
         return stacks
     
     def check_stacks(self, alias, project_id, stack_name, timeout):
         self.builtin.log('Checking stacks: %s' % stack_name, 'DEBUG')
         session = self._cache.switch(alias)
-        heat = htclient.Client(HEAT_API_VERSION, session=session)
+        heat = htclient.Client(HEAT_API_VERSION, session=session, service_type='orchestration')
         start_timestamp = int(datetime.datetime.now().strftime("%s"))
         current_timestamp = int(datetime.datetime.now().strftime("%s"))
         completed = False
@@ -338,7 +338,7 @@ class OpenStackKeywords(object):
     def delete_stacks(self, alias, project_id, stack_name, timeout):
         self.builtin.log('Deleting stacks: %s' % stack_name, 'DEBUG')
         session = self._cache.switch(alias)
-        heat = htclient.Client(HEAT_API_VERSION, session=session)
+        heat = htclient.Client(HEAT_API_VERSION, session=session, service_type='orchestration')
         start_timestamp = int(datetime.datetime.now().strftime("%s"))
         current_timestamp = int(datetime.datetime.now().strftime("%s"))
         completed = False
