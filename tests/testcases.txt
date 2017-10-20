@@ -59,11 +59,6 @@ Project Creation
     ${resp}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
     Should Be Equal As Strings  ${resp.name}  ${TEST_PROJECT}
 
-Flavor Creation
-    [Tags]  create
-    ${FLAVOR}=  Create Flavor   admin  ${TEST_FLAVOR_NAME}
-    Set Global Variable  ${FLAVOR}
-
 User Creation
     [Tags]  create
     ${USER}=  Create User  admin  ${TEST_USER}  ${TEST_PROJECT}  ${TEST_DOMAIN}  ${EMPTY}  \${userpass}
@@ -92,6 +87,11 @@ Stack Verification
 Stack Deletion
     [Tags]  delete
     Delete Stacks   user  ${PROJECT.id}  ${STACK_NAME}  300
+
+Flavor Creation
+    [Tags]  create
+    ${FLAVOR}=  Create Flavor   admin  ${TEST_FLAVOR_NAME}
+    Set Global Variable  ${FLAVOR}
 
 Network1 Creation
     [Tags]  create
