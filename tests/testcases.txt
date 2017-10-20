@@ -41,9 +41,13 @@ ${TOTAL_SUBNETS}        4
 ${TOTAL_PORTS}          100
 ${TOTAL_SEC_GROUPS}     1
 ${TOTAL_SEC_GROUP_RULES}   8
-${HEAT_TEMPLATE_FILE}    swift.yaml
 ${TOTAL_STACKS}         5
 ${STACK_NAME}           teststack
+${HEAT_TEMPLATE}        {"heat_template_version": "2013-05-23",
+...    "description": "Template which creates a Swift container resource",   
+...    "resources":  {
+...  "SwiftContainer": {
+...  "type": "OS::Swift::Container" } } }
 
 *** Test Cases ***
 Project Creation
@@ -77,8 +81,8 @@ User Login
 
 Stack Creation
     [Tags]  create
-    ${TEMPLATE_CONTENT}=   Get File   ${HEAT_TEMPLATE_FILE}
-    @{STACKS}=  Create Stacks    user  ${PROJECT.id}  ${TEMPLATE_CONTENT}  ${STACK_NAME}  ${TOTAL_STACKS}
+    ${TEMPLATE_JSON}=    evaluate    json.loads('''${HEAT_TEMPLATE}''')    json
+    @{STACKS}=  Create Stacks    user  ${PROJECT.id}  ${TEMPLATE_JSON}  ${STACK_NAME}  ${TOTAL_STACKS}
 
 Stack Verification
     [Tags]  check

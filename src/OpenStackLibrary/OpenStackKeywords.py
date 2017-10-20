@@ -299,13 +299,13 @@ class OpenStackKeywords(object):
             rt[limit.name] = limit.value
         return rt
 
-    def create_stacks(self, alias, project_id, template_file, stack_name, num_stacks = 1):
+    def create_stacks(self, alias, project_id, template, stack_name, num_stacks = 1):
         self.builtin.log('Creating %s stacks' % num_stacks, 'DEBUG')
         session = self._cache.switch(alias)
         heat = htclient.Client(HEAT_API_VERSION, session=session, service_type='orchestration')
         stacks=[]
         for i in range(1,int(num_stacks)):
-            fields = {'tenant_id': project_id, 'stack_name': stack_name+'-'+str(i), 'files': {'template.yaml': template_file}}
+            fields = {'tenant_id': project_id, 'stack_name': stack_name+'-'+str(i), 'template': template}
             stacks.append(heat.stacks.create(**fields))
         return stacks
     
