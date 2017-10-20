@@ -14,7 +14,7 @@ ${PASSWORD}            %{OS_PASSWORD}
 ${PROJECT_NAME}        %{OS_PROJECT_NAME}
 ${DOMAIN_NAME}         %{OS_PROJECT_DOMAIN_NAME}
 ${MEMBER_ROLE_NAME}    _member_
-${HEAT_ROLE_NAME}      heat-stack-owner
+${HEAT_ROLE_NAME}      swiftoperator
 ${TEST_PROJECT}        testprj
 ${TEST_DOMAIN}         default
 ${TEST_USER}           testuser
