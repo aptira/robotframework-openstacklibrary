@@ -306,7 +306,7 @@ class OpenStackKeywords(object):
         stacks=[]
         for i in range(1,int(num_stacks)):
             body = {'stack_name': stack_name+'-'+str(i), 'files': {'template.yaml': template_file}}
-            stacks.append(heat.stacks.create(body))
+            stacks.append(heat.stacks.create(**body))
         return stacks
     
     def check_stacks(self, alias, stack_name, timeout):
