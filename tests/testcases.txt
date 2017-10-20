@@ -40,6 +40,9 @@ ${TOTAL_SUBNETS}        4
 ${TOTAL_PORTS}          100
 ${TOTAL_SEC_GROUPS}     1
 ${TOTAL_SEC_GROUP_RULES}   8
+${HEAT_TEMPLATE_FILE}    swift.yaml
+${TOTAL_STACKS}         5
+${STACK_NAME}           teststack
 
 *** Test Cases ***
 Project Creation
@@ -68,6 +71,20 @@ User Creation
 User Login
     [Tags]  login
     Create Session  user    ${AUTH_URL}  ${TEST_USER}  ${userpass}  ${TEST_PROJECT}  ${TEST_DOMAIN}
+
+Stack Creation
+    [Tags]  create
+    ${TEMPLATE_CONTENT}=   Get File   ${HEAT_TEMPLATE_FILE}
+    @{STACKS}=  Create Stacks    user  ${TEMPLATE_CONTENT}  ${STACK_NAME}  ${TOTAL_STACKS}
+
+Stack Verification
+    [Tags]  check
+    @{STACKS_NUM}=  Check Stacks   user  ${STACK_NAME}  600
+    Should Be Equal As Integers     ${STACKS_NUM}   ${TOTAL_STACKS}
+
+Stack Deletion
+    [Tags]  delete
+    Delete Stacks   user  ${STACK_NAME}  300
 
 Network1 Creation
     [Tags]  create
