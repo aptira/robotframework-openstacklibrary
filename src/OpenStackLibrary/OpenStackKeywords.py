@@ -347,7 +347,7 @@ class OpenStackKeywords(object):
             stacks = heat.stacks.list(**body)
             total_stacks = 0
             for stack in stacks:
-                if stack.stack_name.starts_with(stack_name+'-'):
+                if str(stack.stack_name).starts_with(stack_name+'-'):
                     total_stacks += 1
                     stack.delete()
             if total_stacks > 0:
