@@ -304,7 +304,7 @@ class OpenStackKeywords(object):
         session = self._cache.switch(alias)
         heat = htclient.Client(HEAT_API_VERSION, session=session, service_type='orchestration')
         stacks=[]
-        for i in range(1,int(num_stacks)):
+        for i in range(1,int(num_stacks)+1):
             fields = {'tenant_id': project_id, 'stack_name': stack_name+'-'+str(i), 'template': template}
             stacks.append(heat.stacks.create(**fields))
         return stacks
