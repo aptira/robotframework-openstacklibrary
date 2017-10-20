@@ -322,7 +322,7 @@ class OpenStackKeywords(object):
             total_stacks = 0
             completed_stacks = 0
             for stack in stacks:
-                if stack.stack_name.starts_with(stack_name+'-'):
+                if str(stack.stack_name).starts_with(stack_name+'-'):
                     total_stacks += 1
                     if stack.status == "COMPLETE":
                         completed_stacks += 1
