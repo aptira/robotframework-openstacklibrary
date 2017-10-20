@@ -321,13 +321,18 @@ class OpenStackKeywords(object):
             stacks = heat.stacks.list(**body)
             total_stacks = 0
             completed_stacks = 0
+            failed_stacks = 0
             for stack in stacks:
                 if str(stack.stack_name).startswith(stack_name+'-'):
                     total_stacks += 1
                     if stack.status == "COMPLETE":
                         completed_stacks += 1
+                    elif stack.status == "FAILED":
+                        failed_stacks += 1
             if total_stacks == completed_stacks:
                 completed = True
+            elif failed_stacks == total_stacks or total_stacks == failed_stacks+completed_stacks:
+                raise Exception
             else:
                 time.sleep(5)
                 current_timestamp = int(datetime.datetime.now().strftime("%s"))
