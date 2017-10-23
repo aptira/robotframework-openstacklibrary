@@ -215,7 +215,7 @@ class OpenStackKeywords(object):
         nova = nvclient.Client(NOVA_API_VERSION, session=session)
         nova.quotas.update(project_id, instances=instances, cores=cores, ram=ram)
 
-    def create_servers(self, alias, server_name, image_uuid, flavor, count, security_group, networks, config_drive=True):
+    def create_servers(self, alias, server_name, image_uuid, flavor, count, security_group, networks, zone='nova', config_drive=True):
         self.builtin.log('Creating servers: %s, count: %s' % (server_name,count), 'DEBUG')
         if count < 2:
             self.builtin.log('server count: %s, but it needs to be larger than 1.' % count, 'ERROR')
@@ -225,7 +225,7 @@ class OpenStackKeywords(object):
         nets = []
         for network in networks:
             nets.append({"net-id":network})
-        kwargs = {"max_count": count, "min_count": count, "security_groups": [security_group], "nics": nets, "config_drive": config_drive}
+        kwargs = {"max_count": count, "min_count": count, "security_groups": [security_group], "nics": nets, "config_drive": config_drive, "availability_zone": zone}
         nova.servers.create(server_name, image_uuid, flavor, **kwargs)
 
     def check_servers(self, alias, server_name, console, timeout):
