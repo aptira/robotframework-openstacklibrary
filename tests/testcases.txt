@@ -19,6 +19,7 @@ ${TEST_PROJECT}        testprj
 ${TEST_DOMAIN}         default
 ${TEST_USER}           testuser
 ${TEST_FLAVOR_NAME}    testflavor
+${TEST_ZONE}           testzone
 ${NETWORK1_NAME}        testnet1
 ${NETWORK2_NAME}        testnet2
 ${NETWORK3_NAME}        testnet3
@@ -41,7 +42,7 @@ ${TOTAL_SUBNETS}        4
 ${TOTAL_PORTS}          100
 ${TOTAL_SEC_GROUPS}     1
 ${TOTAL_SEC_GROUP_RULES}   8
-${TOTAL_STACKS}         5
+${TOTAL_STACKS}         100
 ${STACK_NAME}           teststack
 ${HEAT_TEMPLATE}        {"heat_template_version": "2013-05-23",
 ...    "description": "Template which creates a Swift container resource",   
@@ -135,7 +136,7 @@ Subnet4 Creation
 
 Server Creation
     [Tags]  create
-    @{NETLIST}=    Create List    ${NETWORK1['network']['id']}    ${NETWORK2['network']['id']}    ${NETWORK3['network']['id']}  ${NETWORK4['network']['id']}
+    @{NETLIST}=    Create List    ${NETWORK1['network']['id']}    ${NETWORK2['network']['id']}    ${NETWORK3['network']['id']}  ${NETWORK4['network']['id']}   ${TEST_ZONE}
     Create Servers  user  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  10  default  ${NETLIST}
 
 Server Verification
