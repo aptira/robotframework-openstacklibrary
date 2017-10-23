@@ -136,8 +136,8 @@ Subnet4 Creation
 
 Server Creation
     [Tags]  create
-    @{NETLIST}=    Create List    ${NETWORK1['network']['id']}    ${NETWORK2['network']['id']}    ${NETWORK3['network']['id']}  ${NETWORK4['network']['id']}   ${TEST_ZONE}
-    Create Servers  user  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  10  default  ${NETLIST}
+    @{NETLIST}=    Create List    ${NETWORK1['network']['id']}    ${NETWORK2['network']['id']}    ${NETWORK3['network']['id']}  ${NETWORK4['network']['id']}
+    Create Servers  user  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  ${TOTAL_INSTANCES}  default  ${NETLIST}  ${TEST_ZONE}
 
 Server Verification
     [Tags]  check
