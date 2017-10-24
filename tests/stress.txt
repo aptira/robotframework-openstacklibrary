@@ -143,41 +143,10 @@ Subnet4 Creation
     ${SUBNET4}=  Create Subnet  user  ${NETWORK4['network']['id']}  ${SUBNET4_NAME}  ${SUBNET4_CIDR}
     Set Global Variable  ${SUBNET4}
 
-Server Creation
-    [Tags]  create
+Generate Load
     @{NETLIST}=    Create List    ${NETWORK1['network']['id']}    ${NETWORK2['network']['id']}    ${NETWORK3['network']['id']}  ${NETWORK4['network']['id']}
-    Create Servers  user  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  ${TOTAL_INSTANCES}  default  ${NETLIST}  ${TEST_ZONE}
-
-Server Verification
-    [Tags]  check
-    @{INSTANCES}=  Check Servers   user  ${SERVER_NAME}  cirros login:  600
-    ${length} =  Get Length  ${INSTANCES}
-    Should Be Equal As Integers     ${length}   ${TOTAL_INSTANCES}
-
-Quota Verification
-    [Tags]  check
-    ${USAGE} =   Get Compute Usage  admin  ${PROJECT.id}
-    Should Be Equal As Integers    ${USAGE['totalRAMUsed']}   ${TOTAL_RAM}
-    Should Be Equal As Integers    ${USAGE['totalCoresUsed']}   ${TOTAL_CORES}
-    ${NETWORKS}=   List Networks   user  ${PROJECT.id}
-    ${NETWORKS_LENGTH} =  Get Length  ${NETWORKS['networks']}
-    Should Be Equal As Integers     ${NETWORKS_LENGTH}   ${TOTAL_NETWORKS}
-    ${SUBNETS}=   List Subnets   user  ${PROJECT.id}
-    ${SUBNETS_LENGTH} =  Get Length  ${SUBNETS['subnets']}
-    Should Be Equal As Integers     ${SUBNETS_LENGTH}   ${TOTAL_SUBNETS}
-    ${PORTS}=   List Ports   user  ${PROJECT.id}
-    ${PORTS_LENGTH} =  Get Length  ${PORTS['ports']}
-    Should Be True     ${PORTS_LENGTH} <= ${TOTAL_PORTS}
-    ${SEC_GROUPS}=   List Security Groups   user  ${PROJECT.id}
-    ${SEC_GROUPS_LENGTH} =  Get Length  ${SEC_GROUPS['security_groups']}
-    Should Be True     ${SEC_GROUPS_LENGTH} <= ${TOTAL_SEC_GROUPS}
-    ${SEC_GROUP_RULES}=   List Security Group Rules   user  ${PROJECT.id}
-    ${SEC_GROUP_RULES_LENGTH} =  Get Length  ${SEC_GROUP_RULES['security_group_rules']}
-    Should Be True     ${SEC_GROUP_RULES_LENGTH} <= ${TOTAL_SEC_GROUP_RULES}
-
-Server Deletion
-    [Tags]  delete
-    Delete Servers   user  ${SERVER_NAME}  300
+    : FOR    ${INDEX}    IN RANGE    1    3
+    \    Create and Delete Instances  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  ${TOTAL_INSTANCES}  ${NETLIST}  ${TEST_ZONE}
 
 Subnet4 Deletion
     [Tags]  delete
@@ -243,3 +212,11 @@ Stop Monitor 31
 Stop Monitor 32
     Terminate Process    ${HANDLE32}
     
+*** Keywords ***
+Create and Delete Instances
+    [Arguments]    ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  ${TOTAL_INSTANCES}  ${NETLIST}  ${TEST_ZONE}
+    Create Servers  user  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  ${TOTAL_INSTANCES}  default  ${NETLIST}  ${TEST_ZONE}
+    @{INSTANCES}=  Check Servers   user  ${SERVER_NAME}  cirros login:  600
+    ${length} =  Get Length  ${INSTANCES}
+    Should Be Equal As Integers     ${length}   ${TOTAL_INSTANCES}
+    Delete Servers   user  ${SERVER_NAME}  300
