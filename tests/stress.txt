@@ -1,0 +1,207 @@
+*** Settings ***
+Documentation     Engineering Limits Test
+Suite Setup       Create Session  admin    ${AUTH_URL}  ${USERNAME}  ${PASSWORD}  ${PROJECT_NAME}  ${DOMAIN_NAME}
+Suite Teardown  Delete All Sessions
+Library  Collections
+Library  String
+Library  ../src/OpenStackLibrary/OpenStackKeywords.py
+Library  OperatingSystem
+Library  Process
+
+*** Variables ***
+${AUTH_URL}            %{OS_AUTH_URL}
+${USERNAME}            %{OS_USERNAME}
+${PASSWORD}            %{OS_PASSWORD}
+${PROJECT_NAME}        %{OS_PROJECT_NAME}
+${DOMAIN_NAME}         %{OS_PROJECT_DOMAIN_NAME}
+${MEMBER_ROLE_NAME}    _member_
+${HEAT_ROLE_NAME}      swiftoperator
+${TEST_PROJECT}        testprj
+${TEST_DOMAIN}         default
+${TEST_USER}           testuser
+${TEST_FLAVOR_NAME}    testflavor
+${TEST_ZONE}           testzone
+${NETWORK1_NAME}        testnet1
+${NETWORK2_NAME}        testnet2
+${NETWORK3_NAME}        testnet3
+${NETWORK4_NAME}        testnet4
+${SUBNET1_NAME}         testsubnet1
+${SUBNET1_CIDR}         192.168.1.0/24
+${SUBNET2_NAME}         testsubnet2
+${SUBNET2_CIDR}         192.168.2.0/24
+${SUBNET3_NAME}         testsubnet3
+${SUBNET3_CIDR}         192.168.3.0/24
+${SUBNET4_NAME}         testsubnet4
+${SUBNET4_CIDR}         192.168.4.0/24
+${SERVER_NAME}          testserver
+${IMAGE_UUID}           57ff0f0a-a031-4650-a8dd-4721ed0a4b65
+${TOTAL_CORES}          88
+${TOTAL_INSTANCES}      88
+${TOTAL_RAM}            180224
+${TOTAL_NETWORKS}       4
+${TOTAL_SUBNETS}        4
+${TOTAL_PORTS}          400
+${TOTAL_SEC_GROUPS}     1
+${TOTAL_SEC_GROUP_RULES}   8
+${MONITOR_SCRIPT}       ./monitor.sh
+${KEY_FILE}             /root/.ssh/director.pem
+${MONITOR_OUTPUT_PATH}  ./
+
+*** Test Cases ***
+Start Monitor on lxvcw1ct102
+    ${HANDLE2} =    Start Process       ${MONITOR_SCRIPT} ${KEY_FILE} lxvcw1ct102   stdout=${MONITOR_OUTPUT_PATH}lxvcw1ct102.log
+    Set Global Variable  ${HANDLE2}
+
+Project Creation
+    [Tags]  create
+    ${PROJECT}=  Create Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
+    Set Global Variable  ${PROJECT}
+    Update Network Quota  admin  ${PROJECT.id}  ${TOTAL_NETWORKS}  ${TOTAL_SUBNETS}  ${TOTAL_PORTS}  ${TOTAL_SEC_GROUPS}  ${TOTAL_SEC_GROUP_RULES}
+    Update Compute Quota  admin  ${PROJECT.id}  ${TOTAL_INSTANCES}  ${TOTAL_CORES}  ${TOTAL_RAM}
+    ${resp}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
+    Should Be Equal As Strings  ${resp.name}  ${TEST_PROJECT}
+
+User Creation
+    [Tags]  create
+    ${USER}=  Create User  admin  ${TEST_USER}  ${TEST_PROJECT}  ${TEST_DOMAIN}  ${EMPTY}  \${userpass}
+    ${PROJECT}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
+    ${MEMBER_ROLE}=  Get Role  admin  ${MEMBER_ROLE_NAME}
+    Add Role To User  admin  ${MEMBER_ROLE.id}  ${USER.id}  ${PROJECT.id}
+    ${HEAT_ROLE}=  Get Role  admin  ${HEAT_ROLE_NAME}
+    Add Role To User  admin  ${HEAT_ROLE.id}  ${USER.id}  ${PROJECT.id}
+    ${resp}=  Get User  admin  ${TEST_USER}  ${TEST_PROJECT}
+    Should Be Equal As Strings  ${resp.name}  ${TEST_USER}
+
+User Login
+    [Tags]  login
+    Create Session  user    ${AUTH_URL}  ${TEST_USER}  ${userpass}  ${TEST_PROJECT}  ${TEST_DOMAIN}
+
+Flavor Creation
+    [Tags]  create
+    ${FLAVOR}=  Create Flavor   admin  ${TEST_FLAVOR_NAME}
+    Set Global Variable  ${FLAVOR}
+
+Network1 Creation
+    [Tags]  create
+    ${NETWORK1}=  Create Network  user  ${NETWORK1_NAME}
+    Set Global Variable  ${NETWORK1}
+
+Subnet1 Creation
+    [Tags]  create
+    ${SUBNET1}=  Create Subnet  user  ${NETWORK1['network']['id']}  ${SUBNET1_NAME}  ${SUBNET1_CIDR}
+    Set Global Variable  ${SUBNET1}
+
+Network2 Creation
+    [Tags]  create
+    ${NETWORK2}=  Create Network  user  ${NETWORK2_NAME}
+    Set Global Variable  ${NETWORK2}
+
+Subnet2 Creation
+    [Tags]  create
+    ${SUBNET2}=  Create Subnet  user  ${NETWORK2['network']['id']}  ${SUBNET2_NAME}  ${SUBNET2_CIDR}
+    Set Global Variable  ${SUBNET2}
+
+Network3 Creation
+    [Tags]  create
+    ${NETWORK3}=  Create Network  user  ${NETWORK3_NAME}
+    Set Global Variable  ${NETWORK3}
+
+Subnet3 Creation
+    [Tags]  create
+    ${SUBNET3}=  Create Subnet  user  ${NETWORK3['network']['id']}  ${SUBNET3_NAME}  ${SUBNET3_CIDR}
+    Set Global Variable  ${SUBNET3}
+
+Network4 Creation
+    [Tags]  create
+    ${NETWORK4}=  Create Network  user  ${NETWORK4_NAME}
+    Set Global Variable  ${NETWORK4}
+
+Subnet4 Creation
+    [Tags]  create
+    ${SUBNET4}=  Create Subnet  user  ${NETWORK4['network']['id']}  ${SUBNET4_NAME}  ${SUBNET4_CIDR}
+    Set Global Variable  ${SUBNET4}
+
+Server Creation
+    [Tags]  create
+    @{NETLIST}=    Create List    ${NETWORK1['network']['id']}    ${NETWORK2['network']['id']}    ${NETWORK3['network']['id']}  ${NETWORK4['network']['id']}
+    Create Servers  user  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  ${TOTAL_INSTANCES}  default  ${NETLIST}  ${TEST_ZONE}
+
+Server Verification
+    [Tags]  check
+    @{INSTANCES}=  Check Servers   user  ${SERVER_NAME}  cirros login:  600
+    ${length} =  Get Length  ${INSTANCES}
+    Should Be Equal As Integers     ${length}   ${TOTAL_INSTANCES}
+
+Quota Verification
+    [Tags]  check
+    ${USAGE} =   Get Compute Usage  admin  ${PROJECT.id}
+    Should Be Equal As Integers    ${USAGE['totalRAMUsed']}   ${TOTAL_RAM}
+    Should Be Equal As Integers    ${USAGE['totalCoresUsed']}   ${TOTAL_CORES}
+    ${NETWORKS}=   List Networks   user  ${PROJECT.id}
+    ${NETWORKS_LENGTH} =  Get Length  ${NETWORKS['networks']}
+    Should Be Equal As Integers     ${NETWORKS_LENGTH}   ${TOTAL_NETWORKS}
+    ${SUBNETS}=   List Subnets   user  ${PROJECT.id}
+    ${SUBNETS_LENGTH} =  Get Length  ${SUBNETS['subnets']}
+    Should Be Equal As Integers     ${SUBNETS_LENGTH}   ${TOTAL_SUBNETS}
+    ${PORTS}=   List Ports   user  ${PROJECT.id}
+    ${PORTS_LENGTH} =  Get Length  ${PORTS['ports']}
+    Should Be True     ${PORTS_LENGTH} <= ${TOTAL_PORTS}
+    ${SEC_GROUPS}=   List Security Groups   user  ${PROJECT.id}
+    ${SEC_GROUPS_LENGTH} =  Get Length  ${SEC_GROUPS['security_groups']}
+    Should Be True     ${SEC_GROUPS_LENGTH} <= ${TOTAL_SEC_GROUPS}
+    ${SEC_GROUP_RULES}=   List Security Group Rules   user  ${PROJECT.id}
+    ${SEC_GROUP_RULES_LENGTH} =  Get Length  ${SEC_GROUP_RULES['security_group_rules']}
+    Should Be True     ${SEC_GROUP_RULES_LENGTH} <= ${TOTAL_SEC_GROUP_RULES}
+
+Server Deletion
+    [Tags]  delete
+    Delete Servers   user  ${SERVER_NAME}  300
+
+Subnet4 Deletion
+    [Tags]  delete
+    Delete Subnet  user  ${SUBNET4['subnet']['id']}
+
+Network4 Deletion
+    [Tags]  delete
+    Delete Network  user  ${NETWORK4['network']['id']}
+
+Subnet3 Deletion
+    [Tags]  delete
+    Delete Subnet  user  ${SUBNET3['subnet']['id']}
+
+Network3 Deletion
+    [Tags]  delete
+    Delete Network  user  ${NETWORK3['network']['id']}
+
+Subnet2 Deletion
+    [Tags]  delete
+    Delete Subnet  user  ${SUBNET2['subnet']['id']}
+
+Network2 Deletion
+    [Tags]  delete
+    Delete Network  user  ${NETWORK2['network']['id']}
+
+Subnet1 Deletion
+    [Tags]  delete
+    Delete Subnet  user  ${SUBNET1['subnet']['id']}
+
+Network1 Deletion
+    [Tags]  delete
+    Delete Network  user  ${NETWORK1['network']['id']}
+
+User Deletion
+    [Tags]  delete
+    ${resp}=  Get User  admin  ${TEST_USER}  ${TEST_PROJECT}
+    Delete User  admin  ${resp.id}
+
+Flavor Deletion
+    [Tags]  delete
+    Delete Flavor   admin  ${FLAVOR.id}
+
+Project Deletion
+    [Tags]  delete
+    ${resp}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
+    Delete Project  admin  ${resp.id}
+
+Stop Monitor
+    Terminate Process    ${HANDLE2}
