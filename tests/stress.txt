@@ -46,8 +46,9 @@ ${TOTAL_SEC_GROUP_RULES}   8
 ${MONITOR_MYSQL_SCRIPT}       monitor-mysql.sh
 ${MONITOR_RABBITMQ_SCRIPT}       monitor-rabbitmq.sh
 ${KEY_FILE}             /root/.ssh/director.pem
-${MONITOR_OUTPUT_PATH}  %{PWD}/
+${MONITOR_OUTPUT_PATH}  %{PWD}/../outputs/
 ${CWD}                  %{PWD}
+${ITERATION}            3
 
 *** Test Cases ***
 Start Mysql Monitor on lxvcw1ct101
@@ -145,7 +146,7 @@ Subnet4 Creation
 
 Generate Load
     @{NETLIST}=    Create List    ${NETWORK1['network']['id']}    ${NETWORK2['network']['id']}    ${NETWORK3['network']['id']}  ${NETWORK4['network']['id']}
-    : FOR    ${INDEX}    IN RANGE    1    3
+    : FOR    ${INDEX}    IN RANGE    0    ${ITERATION}
     \    Create and Delete Instances  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  ${TOTAL_INSTANCES}  ${NETLIST}  ${TEST_ZONE}
 
 Subnet4 Deletion
