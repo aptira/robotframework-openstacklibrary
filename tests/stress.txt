@@ -209,9 +209,9 @@ Project Deletion
     ${resp}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
     Delete Project  admin  ${resp.id}
 
-Stop Monitor
+Stop Monitor 21
     Terminate Process    ${HANDLE21}
     
-Stop Monitor
+Stop Monitor 22
     Terminate Process    ${HANDLE22}
     
