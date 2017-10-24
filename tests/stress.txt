@@ -46,10 +46,11 @@ ${TOTAL_SEC_GROUP_RULES}   8
 ${MONITOR_SCRIPT}       ./monitor.sh
 ${KEY_FILE}             /root/.ssh/director.pem
 ${MONITOR_OUTPUT_PATH}  ./
+${CWD}                  %{PWD}
 
 *** Test Cases ***
 Start Monitor on lxvcw1ct102
-    ${HANDLE2} =    Start Process       ${MONITOR_SCRIPT} ${KEY_FILE} lxvcw1ct102   stdout=${MONITOR_OUTPUT_PATH}lxvcw1ct102.log
+    ${HANDLE2} =    Start Process       ${MONITOR_SCRIPT} ${KEY_FILE} lxvcw1ct102   stdout=${MONITOR_OUTPUT_PATH}lxvcw1ct102.log   cwd=${CWD}
     Set Global Variable  ${HANDLE2}
 
 Project Creation
