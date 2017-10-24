@@ -219,5 +219,6 @@ Create and Delete Instances
     Create Servers  user  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  ${TOTAL_INSTANCES}  default  ${NETLIST}  ${TEST_ZONE}
     @{INSTANCES}=  Check Servers   user  ${SERVER_NAME}  cirros login:  600
     ${length} =  Get Length  ${INSTANCES}
-    Should Be Equal As Integers     ${length}   ${TOTAL_INSTANCES}
     Delete Servers   user  ${SERVER_NAME}  300
+    Should Be Equal As Integers     ${length}   ${TOTAL_INSTANCES}
+
