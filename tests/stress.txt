@@ -49,9 +49,13 @@ ${MONITOR_OUTPUT_PATH}  %{PWD}/
 ${CWD}                  %{PWD}
 
 *** Test Cases ***
-Start Monitor on lxvcw1ct102
-    ${HANDLE2} =    Start Process       ${CWD}/${MONITOR_SCRIPT} ${KEY_FILE} lxvcw1ct102   stdout=${MONITOR_OUTPUT_PATH}lxvcw1ct102.log   cwd=${CWD}    shell=yes
-    Set Global Variable  ${HANDLE2}
+Start Mysql Monitor on lxvcw1ct102
+    ${HANDLE21} =    Start Process       ${CWD}/${MONITOR_MYSQL_SCRIPT} ${KEY_FILE} lxvcw1ct102   stdout=${MONITOR_OUTPUT_PATH}lxvcw1ct102-mysql.log   cwd=${CWD}    shell=yes
+    Set Global Variable  ${HANDLE21}
+
+Start Rabbitmq Monitor on lxvcw1ct102
+    ${HANDLE22} =    Start Process       ${CWD}/${MONITOR_RABBITMQ_SCRIPT} ${KEY_FILE} lxvcw1ct102   stdout=${MONITOR_OUTPUT_PATH}lxvcw1ct102-rabbitmq.log   cwd=${CWD}    shell=yes
+    Set Global Variable  ${HANDLE22}
 
 Project Creation
     [Tags]  create
@@ -205,4 +209,8 @@ Project Deletion
     Delete Project  admin  ${resp.id}
 
 Stop Monitor
-    Terminate Process    ${HANDLE2}
+    Terminate Process    ${HANDLE21}
+    
+Stop Monitor
+    Terminate Process    ${HANDLE22}
+    
