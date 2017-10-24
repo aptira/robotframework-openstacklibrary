@@ -50,7 +50,7 @@ ${CWD}                  %{PWD}
 
 *** Test Cases ***
 Start Monitor on lxvcw1ct102
-    ${HANDLE2} =    Start Process       ${CWD}/${MONITOR_SCRIPT} ${KEY_FILE} lxvcw1ct102   stdout=${MONITOR_OUTPUT_PATH}lxvcw1ct102.log   cwd=${CWD}
+    ${HANDLE2} =    Start Process       ${CWD}/${MONITOR_SCRIPT} ${KEY_FILE} lxvcw1ct102   stdout=${MONITOR_OUTPUT_PATH}lxvcw1ct102.log   cwd=${CWD}    shell=yes
     Set Global Variable  ${HANDLE2}
 
 Project Creation
