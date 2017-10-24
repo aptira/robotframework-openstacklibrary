@@ -43,14 +43,14 @@ ${TOTAL_SUBNETS}        4
 ${TOTAL_PORTS}          400
 ${TOTAL_SEC_GROUPS}     1
 ${TOTAL_SEC_GROUP_RULES}   8
-${MONITOR_SCRIPT}       ./monitor.sh
+${MONITOR_SCRIPT}       monitor.sh
 ${KEY_FILE}             /root/.ssh/director.pem
-${MONITOR_OUTPUT_PATH}  ./
+${MONITOR_OUTPUT_PATH}  %{PWD}/
 ${CWD}                  %{PWD}
 
 *** Test Cases ***
 Start Monitor on lxvcw1ct102
-    ${HANDLE2} =    Start Process       ${MONITOR_SCRIPT} ${KEY_FILE} lxvcw1ct102   stdout=${MONITOR_OUTPUT_PATH}lxvcw1ct102.log   cwd=${CWD}
+    ${HANDLE2} =    Start Process       ${CWD}/${MONITOR_SCRIPT} ${KEY_FILE} lxvcw1ct102   stdout=${MONITOR_OUTPUT_PATH}lxvcw1ct102.log   cwd=${CWD}
     Set Global Variable  ${HANDLE2}
 
 Project Creation
