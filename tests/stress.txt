@@ -50,6 +50,14 @@ ${MONITOR_OUTPUT_PATH}  %{PWD}/
 ${CWD}                  %{PWD}
 
 *** Test Cases ***
+Start Mysql Monitor on lxvcw1ct101
+    ${HANDLE11} =    Start Process       ${CWD}/${MONITOR_MYSQL_SCRIPT} ${KEY_FILE} lxvcw1ct101   stdout=${MONITOR_OUTPUT_PATH}lxvcw1ct101-mysql.log   cwd=${CWD}    shell=yes
+    Set Global Variable  ${HANDLE11}
+
+Start Rabbitmq Monitor on lxvcw1ct101
+    ${HANDLE12} =    Start Process       ${CWD}/${MONITOR_RABBITMQ_SCRIPT} ${KEY_FILE} lxvcw1ct101   stdout=${MONITOR_OUTPUT_PATH}lxvcw1ct101-rabbitmq.log   cwd=${CWD}    shell=yes
+    Set Global Variable  ${HANDLE12}
+
 Start Mysql Monitor on lxvcw1ct102
     ${HANDLE21} =    Start Process       ${CWD}/${MONITOR_MYSQL_SCRIPT} ${KEY_FILE} lxvcw1ct102   stdout=${MONITOR_OUTPUT_PATH}lxvcw1ct102-mysql.log   cwd=${CWD}    shell=yes
     Set Global Variable  ${HANDLE21}
@@ -57,6 +65,14 @@ Start Mysql Monitor on lxvcw1ct102
 Start Rabbitmq Monitor on lxvcw1ct102
     ${HANDLE22} =    Start Process       ${CWD}/${MONITOR_RABBITMQ_SCRIPT} ${KEY_FILE} lxvcw1ct102   stdout=${MONITOR_OUTPUT_PATH}lxvcw1ct102-rabbitmq.log   cwd=${CWD}    shell=yes
     Set Global Variable  ${HANDLE22}
+
+Start Mysql Monitor on lxvcw1ct103
+    ${HANDLE31} =    Start Process       ${CWD}/${MONITOR_MYSQL_SCRIPT} ${KEY_FILE} lxvcw1ct103   stdout=${MONITOR_OUTPUT_PATH}lxvcw1ct103-mysql.log   cwd=${CWD}    shell=yes
+    Set Global Variable  ${HANDLE31}
+
+Start Rabbitmq Monitor on lxvcw1ct103
+    ${HANDLE32} =    Start Process       ${CWD}/${MONITOR_RABBITMQ_SCRIPT} ${KEY_FILE} lxvcw1ct103   stdout=${MONITOR_OUTPUT_PATH}lxvcw1ct103-rabbitmq.log   cwd=${CWD}    shell=yes
+    Set Global Variable  ${HANDLE32}
 
 Project Creation
     [Tags]  create
@@ -209,9 +225,21 @@ Project Deletion
     ${resp}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
     Delete Project  admin  ${resp.id}
 
+Stop Monitor 11
+    Terminate Process    ${HANDLE11}
+    
+Stop Monitor 12
+    Terminate Process    ${HANDLE12}
+
 Stop Monitor 21
     Terminate Process    ${HANDLE21}
     
 Stop Monitor 22
     Terminate Process    ${HANDLE22}
+
+Stop Monitor 31
+    Terminate Process    ${HANDLE31}
+    
+Stop Monitor 32
+    Terminate Process    ${HANDLE32}
     
