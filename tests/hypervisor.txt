@@ -75,20 +75,6 @@ User Login
     [Tags]  login
     Create Session  user    ${AUTH_URL}  ${TEST_USER}  ${userpass}  ${TEST_PROJECT}  ${TEST_DOMAIN}
 
-Stack Creation
-    [Tags]  create
-    ${TEMPLATE_JSON}=    evaluate    json.loads('''${HEAT_TEMPLATE}''')    json
-    @{STACKS}=  Create Stacks    user  ${PROJECT.id}  ${TEMPLATE_JSON}  ${STACK_NAME}  ${TOTAL_STACKS}
-
-Stack Verification
-    [Tags]  check
-    ${STACKS_NUM}=  Check Stacks   user  ${PROJECT.id}  ${STACK_NAME}  600
-    Should Be Equal As Integers     ${STACKS_NUM}   ${TOTAL_STACKS}
-
-Stack Deletion
-    [Tags]  delete
-    Delete Stacks   user  ${PROJECT.id}  ${STACK_NAME}  300
-
 Flavor Creation
     [Tags]  create
     ${FLAVOR}=  Create Flavor   admin  ${TEST_FLAVOR_NAME}
@@ -145,27 +131,15 @@ Server Verification
     ${length} =  Get Length  ${INSTANCES}
     Should Be Equal As Integers     ${length}   ${TOTAL_INSTANCES}
 
-Quota Verification
+Hypervisor Statistics
     [Tags]  check
-    ${USAGE} =   Get Compute Usage  admin  ${PROJECT.id}
-    Should Be Equal As Integers    ${USAGE['totalRAMUsed']}   ${TOTAL_RAM}
-    Should Be Equal As Integers    ${USAGE['totalCoresUsed']}   ${TOTAL_CORES}
-    ${NETWORKS}=   List Networks   user  ${PROJECT.id}
-    ${NETWORKS_LENGTH} =  Get Length  ${NETWORKS['networks']}
-    Should Be Equal As Integers     ${NETWORKS_LENGTH}   ${TOTAL_NETWORKS}
-    ${SUBNETS}=   List Subnets   user  ${PROJECT.id}
-    ${SUBNETS_LENGTH} =  Get Length  ${SUBNETS['subnets']}
-    Should Be Equal As Integers     ${SUBNETS_LENGTH}   ${TOTAL_SUBNETS}
-    ${PORTS}=   List Ports   user  ${PROJECT.id}
-    ${PORTS_LENGTH} =  Get Length  ${PORTS['ports']}
-    Should Be True     ${PORTS_LENGTH} <= ${TOTAL_PORTS}
-    ${SEC_GROUPS}=   List Security Groups   user  ${PROJECT.id}
-    ${SEC_GROUPS_LENGTH} =  Get Length  ${SEC_GROUPS['security_groups']}
-    Should Be True     ${SEC_GROUPS_LENGTH} <= ${TOTAL_SEC_GROUPS}
-    ${SEC_GROUP_RULES}=   List Security Group Rules   user  ${PROJECT.id}
-    ${SEC_GROUP_RULES_LENGTH} =  Get Length  ${SEC_GROUP_RULES['security_group_rules']}
-    Should Be True     ${SEC_GROUP_RULES_LENGTH} <= ${TOTAL_SEC_GROUP_RULES}
-
+    ${STATS} =   Get Hypervisor Statistics  admin
+    ${VCPU_USAGE} =   Evaluate   ${STATS.vcpus_used}/${STATS.vcpus}
+    Log   VCPUs used ${STATS.vcpus_used} VCPUs total ${STATS.vcpus} usage rate ${VCPU_USAGE}
+    ${RAM_USAGE} =   Evaluate   ${STATS.memory_mb_used}/${STATS.memory_mb}
+    Log   RAM used ${STATS.memory_mb_used} RAM total ${STATS.memory_mb} usage rate ${RAM_USAGE}
+    Log   Disk total ${STATS.local_gb} used ${STATS.local_gb_used} free ${STATS.free_disk_gb}
+    
 Server Deletion
     [Tags]  delete
     Delete Servers   user  ${SERVER_NAME}  300
