@@ -34,9 +34,9 @@ ${SUBNET4_NAME}         testsubnet4
 ${SUBNET4_CIDR}         192.168.4.0/24
 ${SERVER_NAME}          testserver
 ${IMAGE_UUID}           57ff0f0a-a031-4650-a8dd-4721ed0a4b65
-${TOTAL_CORES}          10
-${TOTAL_INSTANCES}      10
-${TOTAL_RAM}            20480
+${TOTAL_CORES}          80
+${TOTAL_INSTANCES}      80
+${TOTAL_RAM}            163840
 ${TOTAL_NETWORKS}       4
 ${TOTAL_SUBNETS}        4
 ${TOTAL_PORTS}          100
