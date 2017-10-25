@@ -360,4 +360,9 @@ class OpenStackKeywords(object):
                 current_timestamp = int(datetime.datetime.now().strftime("%s"))
             else:
                 completed = True
-            
+
+    def get_hypervisor_statistics(self, alias):
+        self.builtin.log('Getting hypervisor statistics', 'DEBUG')
+        session = self._cache.switch(alias)
+        nova = nvclient.Client(NOVA_API_VERSION, session=session)
+        return nova.hypervisors.statistics()

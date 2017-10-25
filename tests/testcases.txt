@@ -165,6 +165,10 @@ Quota Verification
     ${SEC_GROUP_RULES}=   List Security Group Rules   user  ${PROJECT.id}
     ${SEC_GROUP_RULES_LENGTH} =  Get Length  ${SEC_GROUP_RULES['security_group_rules']}
     Should Be True     ${SEC_GROUP_RULES_LENGTH} <= ${TOTAL_SEC_GROUP_RULES}
+
+Hypervisor Statistics
+    [Tags]  check
+    ${STATS} =   Get Hypervisor Statistics  admin
     
 Server Deletion
     [Tags]  delete
