@@ -39,7 +39,7 @@ ${TOTAL_INSTANCES}      80
 ${TOTAL_RAM}            163840
 ${TOTAL_NETWORKS}       4
 ${TOTAL_SUBNETS}        4
-${TOTAL_PORTS}          100
+${TOTAL_PORTS}          400
 ${TOTAL_SEC_GROUPS}     1
 ${TOTAL_SEC_GROUP_RULES}   8
 ${TOTAL_STACKS}         100
