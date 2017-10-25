@@ -134,10 +134,10 @@ Server Verification
 Hypervisor Statistics
     [Tags]  check
     ${STATS} =   Get Hypervisor Statistics  admin
-    ${VCPU_USAGE} =   Evaluate   ${STATS.vcpus_used}/${STATS.vcpus}
-    Log   VCPUs used ${STATS.vcpus_used} VCPUs total ${STATS.vcpus} usage rate ${VCPU_USAGE}
-    ${RAM_USAGE} =   Evaluate   ${STATS.memory_mb_used}/${STATS.memory_mb}
-    Log   RAM used ${STATS.memory_mb_used} RAM total ${STATS.memory_mb} usage rate ${RAM_USAGE}
+    ${VCPU_USAGE} =   Evaluate   ${STATS.vcpus_used}*100/${STATS.vcpus}
+    Log   VCPUs used ${STATS.vcpus_used} VCPUs total ${STATS.vcpus} usage rate ${VCPU_USAGE}\%
+    ${RAM_USAGE} =   Evaluate   ${STATS.memory_mb_used}*100/${STATS.memory_mb}
+    Log   RAM used ${STATS.memory_mb_used} RAM total ${STATS.memory_mb} usage rate ${RAM_USAGE}\%
     Log   Disk total ${STATS.local_gb} used ${STATS.local_gb_used} free ${STATS.free_disk_gb}
     
 Server Deletion
