@@ -50,7 +50,7 @@ ${HEAT_TEMPLATE}        {"heat_template_version": "2013-05-23",
 ...    "resources":  {
 ...  "SwiftContainer": {
 ...  "type": "OS::Swift::Container" } } }
-${TOTAL_IMAGES}         2
+${TOTAL_IMAGES}         10
 ${IMAGE_NAME}           test_image
 ${IMAGE_PATH}           /root/CentOS-7-x86_64-GenericCloud.qcow2
 ${KEY_FILE}             /root/.ssh/director.pem
@@ -79,6 +79,14 @@ User Creation
 User Login
     [Tags]  login
     Create Session  user    ${AUTH_URL}  ${TEST_USER}  ${userpass}  ${TEST_PROJECT}  ${TEST_DOMAIN}
+
+Check Disk Usage
+    [Tags]  check
+    Open Connection    lxvcw1ct101
+    Login With Public Key    heat-admin  ${KEY_FILE}
+    ${stdout}=  Execute Command  sudo df -h
+    Log  ${stdout}
+    Close Connection
 
 Image Creation
     [Tags]  create
