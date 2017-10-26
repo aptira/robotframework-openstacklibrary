@@ -82,7 +82,7 @@ User Login
 
 Image Creation
     [Tags]  create
-    File Should Exist    ${IMAGE_PATH}
+    OperatingSystem.File Should Exist    ${IMAGE_PATH}
     @{ImageList}=    Create List
     : FOR    ${INDEX}    IN RANGE    0    ${TOTAL_IMAGES}
     \    ${IMAGE}=  Create Image  user  ${IMAGE_NAME}  ${IMAGE_PATH}
