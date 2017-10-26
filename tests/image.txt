@@ -107,10 +107,6 @@ User Deletion
     ${resp}=  Get User  admin  ${TEST_USER}  ${TEST_PROJECT}
     Delete User  admin  ${resp.id}
 
-Flavor Deletion
-    [Tags]  delete
-    Delete Flavor   admin  ${FLAVOR.id}
-
 Project Deletion
     [Tags]  delete
     ${resp}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
