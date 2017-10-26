@@ -50,7 +50,7 @@ ${HEAT_TEMPLATE}        {"heat_template_version": "2013-05-23",
 ...    "resources":  {
 ...  "SwiftContainer": {
 ...  "type": "OS::Swift::Container" } } }
-${TOTAL_IMAGES}         10
+${TOTAL_IMAGES}         300
 ${IMAGE_NAME}           test_image
 ${IMAGE_PATH}           /root/CentOS-7-x86_64-GenericCloud.qcow2
 ${KEY_FILE}             /root/.ssh/director.pem
@@ -93,7 +93,8 @@ Image Creation
     OperatingSystem.File Should Exist    ${IMAGE_PATH}
     @{ImageList}=    Create List
     : FOR    ${INDEX}    IN RANGE    0    ${TOTAL_IMAGES}
-    \    ${IMAGE}=  Create Image  user  ${IMAGE_NAME}_${INDEX}  ${IMAGE_PATH}
+    \    ${IMAGE_FULL_NAME}=  Catenate   SEPARATOR=_  ${IMAGE_NAME}  ${INDEX}
+    \    ${IMAGE}=  Create Image  user  ${IMAGE_FULL_NAME}  ${IMAGE_PATH}
     \    Append To List    ${ImageList}    ${IMAGE.id}
     Set Global Variable  @{ImageList}
 
