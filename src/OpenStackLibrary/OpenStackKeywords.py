@@ -369,11 +369,11 @@ class OpenStackKeywords(object):
         nova = nvclient.Client(NOVA_API_VERSION, session=session)
         return nova.hypervisors.statistics()
 
-    def create_image(self, alias, image_name, image_path):
+    def create_image(self, alias, image_name, image_path, disk_format='qcow2', container_format='bare'):
         self.builtin.log('Creating image %s' % image_name, 'DEBUG')
         session = self._cache.switch(alias)
         glance = gcclient.Client(GLANCE_API_VERSION, session=session)
-        image = glance.images.create(name=image_name)
+        image = glance.images.create(name=image_name, disk_format=disk_format, container_format=container_format)
         glance.images.upload(image.id, open(image_path, 'rb'))
         return image
     
