@@ -1,0 +1,118 @@
+*** Settings ***
+Documentation     Engineering Limits Test
+Suite Setup       Create Session  admin    ${AUTH_URL}  ${USERNAME}  ${PASSWORD}  ${PROJECT_NAME}  ${DOMAIN_NAME}
+Suite Teardown  Delete All Sessions
+Library  Collections
+Library  String
+Library  ../src/OpenStackLibrary/OpenStackKeywords.py
+Library  OperatingSystem
+Library  SSHLibrary
+
+*** Variables ***
+${AUTH_URL}            %{OS_AUTH_URL}
+${USERNAME}            %{OS_USERNAME}
+${PASSWORD}            %{OS_PASSWORD}
+${PROJECT_NAME}        %{OS_PROJECT_NAME}
+${DOMAIN_NAME}         %{OS_PROJECT_DOMAIN_NAME}
+${MEMBER_ROLE_NAME}    _member_
+${HEAT_ROLE_NAME}      swiftoperator
+${TEST_PROJECT}        testprj
+${TEST_DOMAIN}         default
+${TEST_USER}           testuser
+${TEST_FLAVOR_NAME}    testflavor
+${TEST_ZONE}           testzone
+${NETWORK1_NAME}        testnet1
+${NETWORK2_NAME}        testnet2
+${NETWORK3_NAME}        testnet3
+${NETWORK4_NAME}        testnet4
+${SUBNET1_NAME}         testsubnet1
+${SUBNET1_CIDR}         192.168.1.0/24
+${SUBNET2_NAME}         testsubnet2
+${SUBNET2_CIDR}         192.168.2.0/24
+${SUBNET3_NAME}         testsubnet3
+${SUBNET3_CIDR}         192.168.3.0/24
+${SUBNET4_NAME}         testsubnet4
+${SUBNET4_CIDR}         192.168.4.0/24
+${SERVER_NAME}          testserver
+${IMAGE_UUID}           57ff0f0a-a031-4650-a8dd-4721ed0a4b65
+${TOTAL_CORES}          10
+${TOTAL_INSTANCES}      10
+${TOTAL_RAM}            20480
+${TOTAL_NETWORKS}       4
+${TOTAL_SUBNETS}        4
+${TOTAL_PORTS}          100
+${TOTAL_SEC_GROUPS}     1
+${TOTAL_SEC_GROUP_RULES}   8
+${TOTAL_STACKS}         100
+${STACK_NAME}           teststack
+${HEAT_TEMPLATE}        {"heat_template_version": "2013-05-23",
+...    "description": "Template which creates a Swift container resource",   
+...    "resources":  {
+...  "SwiftContainer": {
+...  "type": "OS::Swift::Container" } } }
+${TOTAL_IMAGES}         2
+${IMAGE_NAME}           test_image
+${IMAGE_PATH}           /root/CentOS-7-x86_64-GenericCloud.qcow2
+${KEY_FILE}             /root/.ssh/director.pem
+
+*** Test Cases ***
+Project Creation
+    [Tags]  create
+    ${PROJECT}=  Create Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
+    Set Global Variable  ${PROJECT}
+    Update Network Quota  admin  ${PROJECT.id}  ${TOTAL_NETWORKS}  ${TOTAL_SUBNETS}  ${TOTAL_PORTS}  ${TOTAL_SEC_GROUPS}  ${TOTAL_SEC_GROUP_RULES}
+    Update Compute Quota  admin  ${PROJECT.id}  ${TOTAL_INSTANCES}  ${TOTAL_CORES}  ${TOTAL_RAM}
+    ${resp}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
+    Should Be Equal As Strings  ${resp.name}  ${TEST_PROJECT}
+
+User Creation
+    [Tags]  create
+    ${USER}=  Create User  admin  ${TEST_USER}  ${TEST_PROJECT}  ${TEST_DOMAIN}  ${EMPTY}  \${userpass}
+    ${PROJECT}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
+    ${MEMBER_ROLE}=  Get Role  admin  ${MEMBER_ROLE_NAME}
+    Add Role To User  admin  ${MEMBER_ROLE.id}  ${USER.id}  ${PROJECT.id}
+    ${HEAT_ROLE}=  Get Role  admin  ${HEAT_ROLE_NAME}
+    Add Role To User  admin  ${HEAT_ROLE.id}  ${USER.id}  ${PROJECT.id}
+    ${resp}=  Get User  admin  ${TEST_USER}  ${TEST_PROJECT}
+    Should Be Equal As Strings  ${resp.name}  ${TEST_USER}
+
+User Login
+    [Tags]  login
+    Create Session  user    ${AUTH_URL}  ${TEST_USER}  ${userpass}  ${TEST_PROJECT}  ${TEST_DOMAIN}
+
+Image Creation
+    [Tags]  create
+    File Should Exist    ${IMAGE_PATH}
+    @{ImageList}=    Create List
+    : FOR    ${INDEX}    IN RANGE    0    ${TOTAL_IMAGES}
+    \    ${IMAGE}=  Create Image  user  ${IMAGE_NAME}  ${IMAGE_PATH}
+    \    Append To List    ${ImageList}    ${IMAGE.id}
+    Set Global Variable  @{ImageList}
+
+Check Disk Usage
+    [Tags]  check
+    Open Connection    lxvcw1ct101
+    Login With Public Key    heat-admin  ${KEY_FILE}
+    ${stdout}=  Execute Command  sudo df -h
+    Log  ${stdout}
+    Close Connection
+
+Image Deletion
+    [Tags]  delete
+    :FOR    ${ID}    IN    @{ImageList}
+    \    Delete Image  user  ${ID}
+     
+User Deletion
+    [Tags]  delete
+    ${resp}=  Get User  admin  ${TEST_USER}  ${TEST_PROJECT}
+    Delete User  admin  ${resp.id}
+
+Flavor Deletion
+    [Tags]  delete
+    Delete Flavor   admin  ${FLAVOR.id}
+
+Project Deletion
+    [Tags]  delete
+    ${resp}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
+    Delete Project  admin  ${resp.id}
+    

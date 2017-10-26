@@ -18,9 +18,11 @@ from novaclient import client as nvclient
 from neutronclient.v2_0 import client as ntclient
 from novaclient.exceptions import NotFound
 from heatclient import client as htclient
+from glanceclient import client as gcclient
 
 NOVA_API_VERSION=2
 HEAT_API_VERSION='1'
+GLANCE_API_VERSION='2'
 
 class OpenStackKeywords(object):
     ROBOT_LIBRARY_SCOPE = 'GLOBAL'
@@ -366,3 +368,17 @@ class OpenStackKeywords(object):
         session = self._cache.switch(alias)
         nova = nvclient.Client(NOVA_API_VERSION, session=session)
         return nova.hypervisors.statistics()
+
+    def create_image(self, alias, image_name, image_path):
+        self.builtin.log('Creating image %s' % image_name, 'DEBUG')
+        session = self._cache.switch(alias)
+        glance = gcclient.Client(GLANCE_API_VERSION, session=session)
+        image = glance.images.create(name=image_name)
+        glance.images.upload(image.id, open(image_path, 'rb'))
+        return image
+    
+    def delete_image(self, alias, image_id):
+        self.builtin.log('Deleting image %s' % image_id, 'DEBUG')
+        session = self._cache.switch(alias)
+        glance = gcclient.Client(GLANCE_API_VERSION, session=session)
+        glance.images.delete(image_id)
