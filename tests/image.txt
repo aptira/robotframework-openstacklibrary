@@ -80,9 +80,9 @@ User Login
     [Tags]  login
     Create Session  user    ${AUTH_URL}  ${TEST_USER}  ${userpass}  ${TEST_PROJECT}  ${TEST_DOMAIN}
 
-Check Disk Usage
+Check Disk Usage Before Creation
     [Tags]  check
-    Open Connection    lxvcw1ct101
+    Open Connection    lxvcw1ct102
     Login With Public Key    heat-admin  ${KEY_FILE}
     ${stdout}=  Execute Command  sudo df -h
     Log  ${stdout}
@@ -98,9 +98,9 @@ Image Creation
     \    Append To List    ${ImageList}    ${IMAGE.id}
     Set Global Variable  @{ImageList}
 
-Check Disk Usage
+Check Disk Usage After Creation
     [Tags]  check
-    Open Connection    lxvcw1ct101
+    Open Connection    lxvcw1ct102
     Login With Public Key    heat-admin  ${KEY_FILE}
     ${stdout}=  Execute Command  sudo df -h
     Log  ${stdout}
