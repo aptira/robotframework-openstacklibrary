@@ -93,7 +93,7 @@ Image Creation
     OperatingSystem.File Should Exist    ${IMAGE_PATH}
     @{ImageList}=    Create List
     : FOR    ${INDEX}    IN RANGE    0    ${TOTAL_IMAGES}
-    \    ${IMAGE}=  Create Image  user  ${IMAGE_NAME}  ${IMAGE_PATH}
+    \    ${IMAGE}=  Create Image  user  ${IMAGE_NAME}_${INDEX}  ${IMAGE_PATH}
     \    Append To List    ${ImageList}    ${IMAGE.id}
     Set Global Variable  @{ImageList}
 
