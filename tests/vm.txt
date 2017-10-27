@@ -82,7 +82,7 @@ Port Creation
     
 Server Creation
     [Tags]  create
-    ${userdata} =	Get File	${CURDIR}/userdata.txt
+    ${userdata} =	OperatingSystem.Get File	${CURDIR}/userdata.txt
     ${message} =	Replace Variables	${userdata}
     ${SERVER}=  Create Server With Port  user  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  default  ${KEYPAIR_NAME}  ${PORT['port']['id']}  ${userdata}
     Set Global Variable  ${SERVER}
