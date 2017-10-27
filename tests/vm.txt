@@ -79,11 +79,12 @@ Port Creation
     [Tags]  create
     ${PORT}=    Create Port    user  ${PORT_NAME}  ${NETWORK_ID}
     Set Global Variable  ${PORT}
+    ${REMOTE_IP}=  ${PORT['port']['fixed_ips'][0]['ip_address']}
     
 Server Creation
     [Tags]  create
-    ${userdata} =	OperatingSystem.Get File	${CURDIR}/userdata.txt
-    ${message} =	Replace Variables	${userdata}
+    ${template} =	OperatingSystem.Get File	${CURDIR}/userdata.txt
+    ${userdata} =	Replace Variables	${template}
     ${SERVER}=  Create Server With Port  user  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  default  ${KEYPAIR_NAME}  ${PORT['port']['id']}  ${userdata}
     Set Global Variable  ${SERVER}
 
