@@ -105,8 +105,8 @@ Test Instance
     Login With Public Key    cloud-user  ${KEY_FILE}
     ${stdout}=  Execute Command  sudo df -h
     Log  ${stdout}
-    Put Directory  ${PKG_DIR}
-    ${stdout}=  Execute Command  sudo rpm -ivh ~/pkgs/*
+    Put Directory  ${PKG_DIR}  /tmp
+    ${stdout}=  Execute Command  sudo rpm -ivh /tmp/pkgs/*
     Log  ${stdout}
     ${stdout}=  Execute Command  sudo stress -c 2
     Log  ${stdout}
