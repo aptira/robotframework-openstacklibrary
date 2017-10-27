@@ -96,7 +96,7 @@ Server Verification
     Should Be Equal As Integers     ${length}   1
 
 Start iperf3 server
-    ${IPERF} =    Start Process       iperf3 -s   stdout=iperf.log   cwd=${CWD}    shell=yes
+    ${IPERF} =    Start Process       iperf3 -s   stdout=iperf.log   cwd=${CURDIR}    shell=yes
     Set Global Variable  ${IPERF}
 
 Test Instance
