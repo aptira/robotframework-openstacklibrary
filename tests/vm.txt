@@ -87,7 +87,7 @@ Server Creation
 
 Server Verification
     [Tags]  check
-    @{INSTANCES}=  Check Servers   user  ${SERVER_NAME}  seconds  600
+    @{INSTANCES}=  Check Servers   user  ${SERVER_NAME}  finished  600
     ${length} =  Get Length  ${INSTANCES}
     Should Be Equal As Integers     ${length}   1
 
