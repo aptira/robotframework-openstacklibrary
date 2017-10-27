@@ -67,6 +67,7 @@ Server Deletion
 
 Port Deletion
     [Tags]  delete
+    Delete Port  admin  ${PORT['port']['id']}
 
 Flavor Deletion
     [Tags]  delete
