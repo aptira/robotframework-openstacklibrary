@@ -7,6 +7,7 @@ Library  String
 Library  ../src/OpenStackLibrary/OpenStackKeywords.py
 Library  OperatingSystem
 Library  SSHLibrary
+Library  Process
 
 *** Variables ***
 ${AUTH_URL}            %{OS_AUTH_URL}
@@ -98,7 +99,7 @@ Start iperf3 server
     ${IPERF} =    Start Process       iperf3 -s   stdout=iperf.log   cwd=${CWD}    shell=yes
     Set Global Variable  ${IPERF}
 
-Check Disk Usage After Creation
+Test Instance
     [Tags]  check
     Open Connection    ${PORT['port']['fixed_ips'][0]['ip_address']}
     Login With Public Key    cloud-user  ${KEY_FILE}
@@ -106,16 +107,16 @@ Check Disk Usage After Creation
     Log  ${stdout}
     Put Directory  ${PKG_DIR}
     ${stdout}=  Execute Command  sudo rpm -ivh ~/pkgs/*
-    Log ${stdout}
+    Log  ${stdout}
     ${stdout}=  Execute Command  sudo stress -c 2
-    Log ${stdout}
+    Log  ${stdout}
     ${stdout}=  Execute Command  sudo stress --vm-bytes $(awk '/MemFree/{printf "%d\n", $2 * 0.9;}' < /proc/meminfo)k --vm-keep -m 1
-    Log ${stdout}
+    Log  ${stdout}
     Put File  ${CURDIR}/test.fio
     ${stdout}=  Execute Command  sudo fio test.fio
-    Log ${stdout}
+    Log  ${stdout}
     ${stdout}=  Execute Command  sudo iperf3 -c 10.126.192.30 -P 4
-    Log ${stdout}
+    Log  ${stdout}
     Close Connection
 
 Stop iperf3 server
