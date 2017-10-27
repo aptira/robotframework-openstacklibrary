@@ -50,7 +50,7 @@ ${KEY_FILE}             /root/.ssh/director.pem
 User Creation
     [Tags]  create
     ${PROJECT}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
-    ${USER}=  Create User  admin  ${TEST_USER}  ${TEST_PROJECT}  ${TEST_DOMAIN}  ${EMPTY}  \${userpass}
+    ${USER}=  Create User  admin  ${TEST_USER}  ${PROJECT.id}  ${TEST_DOMAIN}  ${EMPTY}  \${userpass}
     ${MEMBER_ROLE}=  Get Role  admin  ${MEMBER_ROLE_NAME}
     Add Role To User  admin  ${MEMBER_ROLE.id}  ${USER.id}  ${PROJECT.id}
     ${HEAT_ROLE}=  Get Role  admin  ${HEAT_ROLE_NAME}
