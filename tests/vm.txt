@@ -77,17 +77,17 @@ Create keypair
 
 Port Creation 
     [Tags]  create
-    ${PORT}=    Create Port    admin  ${PORT_NAME}  ${NETWORK_ID}
+    ${PORT}=    Create Port    user  ${PORT_NAME}  ${NETWORK_ID}
     Set Global Variable  ${PORT}
     
 Server Creation
     [Tags]  create
-    ${SERVER}=  Create Server With Port  admin  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  default  ${KEYPAIR_NAME}  ${PORT['port']['id']}
+    ${SERVER}=  Create Server With Port  user  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  default  ${KEYPAIR_NAME}  ${PORT['port']['id']}
     Set Global Variable  ${SERVER}
 
 Server Verification
     [Tags]  check
-    @{INSTANCES}=  Check Servers   admin  ${SERVER_NAME}  seconds  600
+    @{INSTANCES}=  Check Servers   user  ${SERVER_NAME}  seconds  600
     ${length} =  Get Length  ${INSTANCES}
     Should Be Equal As Integers     ${length}   1
 
@@ -104,7 +104,7 @@ Server Deletion
 
 Port Deletion
     [Tags]  delete
-    Delete Port  admin  ${PORT['port']['id']}
+    Delete Port  user  ${PORT['port']['id']}
 
 Delete keypair
     [Tags]  delete
