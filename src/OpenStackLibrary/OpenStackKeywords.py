@@ -141,6 +141,13 @@ class OpenStackKeywords(object):
         subnet = {"network_id": network_id, 'name': subnet_name, 'ip_version': ip_version, 'cidr': cidr, 'enable_dhcp': enable_dhcp}
         return neutron.create_subnet({'subnet': subnet})
 
+    def create_port(self, alias, port_name, network_id):
+        self.builtin.log('Creating port: %s' % port_name, 'DEBUG')
+        session = self._cache.switch(alias)
+        neutron = ntclient.Client(session=session)
+        port = {"network_id": network_id, 'name': port_name, 'admin_state_up': True}
+        return neutron.create_port({'port': port})
+
     def list_networks(self, alias, project_id):
         self.builtin.log('Listing networks', 'DEBUG')
         session = self._cache.switch(alias)
@@ -175,6 +182,12 @@ class OpenStackKeywords(object):
         neutron = ntclient.Client(session=session)
         query = {"project_id": project_id}
         return neutron.list_security_group_rules(retrieve_all=True, **query)
+
+    def delete_port(self, alias, port_id):
+        self.builtin.log('Deleting port: %s' % port_id, 'DEBUG')
+        session = self._cache.switch(alias)
+        neutron = ntclient.Client(session=session)
+        neutron.delete_port(port_id)
 
     def delete_subnet(self, alias, subnet_id):
         self.builtin.log('Deleting subnet: %s' % subnet_id, 'DEBUG')
@@ -216,6 +229,15 @@ class OpenStackKeywords(object):
         session = self._cache.switch(alias)
         nova = nvclient.Client(NOVA_API_VERSION, session=session)
         nova.quotas.update(project_id, instances=instances, cores=cores, ram=ram)
+
+    def create_server_with_port(self, alias, server_name, image_uuid, flavor, security_group, key_name, port_id, zone='nova', config_drive=True):
+        self.builtin.log('Creating servers: %s with port: %s' % (server_name,port_id), 'DEBUG')
+        session = self._cache.switch(alias)
+        nova = nvclient.Client(NOVA_API_VERSION, session=session)
+        nets = []
+        nets.append({"port-id":port_id})
+        kwargs = {"max_count": 1, "min_count": 1, "key_name": key_name, "security_groups": [security_group], "nics": nets, "config_drive": config_drive, "availability_zone": zone}
+        return nova.servers.create(server_name, image_uuid, flavor, **kwargs)
 
     def create_servers(self, alias, server_name, image_uuid, flavor, count, security_group, networks, zone='nova', config_drive=True):
         self.builtin.log('Creating servers: %s, count: %s' % (server_name,count), 'DEBUG')

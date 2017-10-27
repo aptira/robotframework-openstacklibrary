@@ -1,0 +1,83 @@
+*** Settings ***
+Documentation     Engineering Limits Test
+Suite Setup       Create Session  admin    ${AUTH_URL}  ${USERNAME}  ${PASSWORD}  ${PROJECT_NAME}  ${DOMAIN_NAME}
+Suite Teardown  Delete All Sessions
+Library  Collections
+Library  String
+Library  ../src/OpenStackLibrary/OpenStackKeywords.py
+Library  OperatingSystem
+Library  SSHLibrary
+
+*** Variables ***
+${AUTH_URL}            %{OS_AUTH_URL}
+${USERNAME}            %{OS_USERNAME}
+${PASSWORD}            %{OS_PASSWORD}
+${PROJECT_NAME}        %{OS_PROJECT_NAME}
+${DOMAIN_NAME}         %{OS_PROJECT_DOMAIN_NAME}
+${MEMBER_ROLE_NAME}    _member_
+${HEAT_ROLE_NAME}      swiftoperator
+${TEST_PROJECT}        proj_enterpriseedge
+${TEST_DOMAIN}         default
+${TEST_USER}           testuser
+${TEST_FLAVOR_NAME}    testflavor
+${TEST_ZONE}           testzone
+${NETWORK_ID}           367facbf-18ec-4134-879b-2b8deb7a307c
+${PORT_NAME}            testvmport
+${KEY_NAME}             vmtest-key
+${SERVER_NAME}          testserver
+${IMAGE_UUID}           57ff0f0a-a031-4650-a8dd-4721ed0a4b65
+${TOTAL_CORES}          10
+${TOTAL_INSTANCES}      10
+${TOTAL_RAM}            20480
+${TOTAL_NETWORKS}       4
+${TOTAL_SUBNETS}        4
+${TOTAL_PORTS}          100
+${TOTAL_SEC_GROUPS}     1
+${TOTAL_SEC_GROUP_RULES}   8
+${TOTAL_STACKS}         100
+${STACK_NAME}           teststack
+${HEAT_TEMPLATE}        {"heat_template_version": "2013-05-23",
+...    "description": "Template which creates a Swift container resource",   
+...    "resources":  {
+...  "SwiftContainer": {
+...  "type": "OS::Swift::Container" } } }
+${TOTAL_IMAGES}         300
+${IMAGE_NAME}           test_image
+${IMAGE_PATH}           /root/CentOS-7-x86_64-GenericCloud.qcow2
+${KEY_FILE}             /root/.ssh/director.pem
+
+*** Test Cases ***
+User Creation
+    [Tags]  create
+    ${USER}=  Create User  admin  ${TEST_USER}  ${TEST_PROJECT}  ${TEST_DOMAIN}  ${EMPTY}  \${userpass}
+    ${PROJECT}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
+    ${MEMBER_ROLE}=  Get Role  admin  ${MEMBER_ROLE_NAME}
+    Add Role To User  admin  ${MEMBER_ROLE.id}  ${USER.id}  ${PROJECT.id}
+    ${HEAT_ROLE}=  Get Role  admin  ${HEAT_ROLE_NAME}
+    Add Role To User  admin  ${HEAT_ROLE.id}  ${USER.id}  ${PROJECT.id}
+    ${resp}=  Get User  admin  ${TEST_USER}  ${TEST_PROJECT}
+    Should Be Equal As Strings  ${resp.name}  ${TEST_USER}
+
+User Login
+    [Tags]  login
+    Create Session  user    ${AUTH_URL}  ${TEST_USER}  ${userpass}  ${TEST_PROJECT}  ${TEST_DOMAIN}
+
+Port Creation 
+    [Tags]  create
+    ${PORT}=    Create Port    user  ${PORT_NAME}  ${NETWORK_ID}
+    
+Server Creation
+    [Tags]  create
+    ${SERVER}=  Create Server With Port  user  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  default  ${KEY_NAME}  ${PORT.id}  ${TEST_ZONE}
+    Set Global Variable  ${SERVER}
+
+Server Deletion
+    [Tags]  delete
+
+Port Deletion
+    [Tags]  delete
+         
+User Deletion
+    [Tags]  delete
+    ${resp}=  Get User  admin  ${TEST_USER}  ${TEST_PROJECT}
+    Delete User  admin  ${resp.id}
