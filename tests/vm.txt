@@ -84,6 +84,7 @@ Port Deletion
 
 Flavor Deletion
     [Tags]  delete
+    Delete Flavor   admin  ${FLAVOR.id}
          
 User Deletion
     [Tags]  delete
