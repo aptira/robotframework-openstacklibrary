@@ -230,13 +230,15 @@ class OpenStackKeywords(object):
         nova = nvclient.Client(NOVA_API_VERSION, session=session)
         nova.quotas.update(project_id, instances=instances, cores=cores, ram=ram)
 
-    def create_server_with_port(self, alias, server_name, image_uuid, flavor, security_group, key_name, port_id, zone='nova', config_drive=True):
+    def create_server_with_port(self, alias, server_name, image_uuid, flavor, security_group, key_name, port_id, user_data=None, zone='nova', config_drive=True):
         self.builtin.log('Creating servers: %s with port: %s' % (server_name,port_id), 'DEBUG')
         session = self._cache.switch(alias)
         nova = nvclient.Client(NOVA_API_VERSION, session=session)
         nets = []
         nets.append({"port-id":port_id})
         kwargs = {"max_count": 1, "min_count": 1, "key_name": key_name, "security_groups": [security_group], "nics": nets, "config_drive": config_drive, "availability_zone": zone}
+        if user_data:
+            kwargs["userdata"]=user_data
         return nova.servers.create(server_name, image_uuid, flavor, **kwargs)
 
     def create_servers(self, alias, server_name, image_uuid, flavor, count, security_group, networks, zone='nova', config_drive=True):

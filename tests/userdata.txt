@@ -1,0 +1,12 @@
+#cloud-config
+write_files:
+  - path: /etc/sysconfig/network-scripts/ifcfg-eth0
+    content: |
+      DEVICE=eth0
+      BOOTPROTO=none
+      IPADDR=${PORT['port']['fixed_ips'][0]['ip_address']}
+      PREFIX=27
+      GATEWAY=10.126.192.1
+      ONBOOT=yes
+runcmd:
+  - [ifup, eth0]
