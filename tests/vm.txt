@@ -62,6 +62,20 @@ Server Creation
     ${SERVER}=  Create Server With Port  admin  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  default  ${KEY_NAME}  ${PORT['port']['id']}
     Set Global Variable  ${SERVER}
 
+Server Verification
+    [Tags]  check
+    @{INSTANCES}=  Check Servers   admin  ${SERVER_NAME}  seconds  600
+    ${length} =  Get Length  ${INSTANCES}
+    Should Be Equal As Integers     ${length}   1
+
+Check Disk Usage After Creation
+    [Tags]  check
+    Open Connection    ${PORT['fixed_ips'][0]['ip_address']}
+    Login With Public Key    heat-admin  ${KEY_FILE}
+    ${stdout}=  Execute Command  sudo df -h
+    Log  ${stdout}
+    Close Connection
+
 Server Deletion
     [Tags]  delete
 
