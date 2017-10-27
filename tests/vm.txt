@@ -45,7 +45,7 @@ ${HEAT_TEMPLATE}        {"heat_template_version": "2013-05-23",
 ${TOTAL_IMAGES}         300
 ${IMAGE_NAME}           test_image
 ${IMAGE_PATH}           /root/CentOS-7-x86_64-GenericCloud.qcow2
-${KEY_FILE}             /root/.ssh/director.pem
+${KEY_FILE}             /root/.ssh/id_rsa
 
 *** Test Cases ***
 User Creation
@@ -94,7 +94,7 @@ Server Verification
 Check Disk Usage After Creation
     [Tags]  check
     Open Connection    ${PORT['port']['fixed_ips'][0]['ip_address']}
-    Login With Public Key    heat-admin  ${KEY_FILE}
+    Login With Public Key    cloud-user  ${KEY_FILE}
     ${stdout}=  Execute Command  sudo df -h
     Log  ${stdout}
     Close Connection
