@@ -74,7 +74,7 @@ Port Creation
     
 Server Creation
     [Tags]  create
-    ${SERVER}=  Create Server With Port  user  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  default  ${KEY_NAME}  ${PORT.id}  ${TEST_ZONE}
+    ${SERVER}=  Create Server With Port  user  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  default  ${KEY_NAME}  ${PORT['port']['id']}  ${TEST_ZONE}
     Set Global Variable  ${SERVER}
 
 Server Deletion
