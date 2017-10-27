@@ -70,10 +70,10 @@ User Login
 
 Create keypair
     [Tags]  create
-    ${rc}       ${PUBLIC_KEY} =    Run and Return Rc And Output cat ${PUBKEY_FILE}
+    ${rc}       ${PUBLIC_KEY} =    Run and Return Rc And Output  cat ${PUBKEY_FILE}
     Should Be Equal As Integers    ${rc}     0
-    ${KEYPAIR_ID}=      Create Keypair  user    ${KEYPAIR_NAME} ${PUBLIC_KEY}
-    Set Global Variable ${KEYPAIR_ID}
+    ${KEYPAIR_ID}=      Create Keypair  user    ${KEYPAIR_NAME}  ${PUBLIC_KEY}
+    Set Global Variable  ${KEYPAIR_ID}
 
 Port Creation 
     [Tags]  create
