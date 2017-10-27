@@ -26,7 +26,7 @@ ${PORT_NAME}            testvmport
 ${KEYPAIR_NAME}         vmtest-key
 ${PUBKEY_FILE}          /root/.ssh/id_rsa.pub
 ${SERVER_NAME}          testserver
-${IMAGE_UUID}           57ff0f0a-a031-4650-a8dd-4721ed0a4b65
+${IMAGE_UUID}           b9d6a29d-fd30-433c-a39a-7f8cc34ad0ad
 ${TOTAL_CORES}          10
 ${TOTAL_INSTANCES}      10
 ${TOTAL_RAM}            20480
