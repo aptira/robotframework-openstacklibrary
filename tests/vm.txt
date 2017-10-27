@@ -104,7 +104,7 @@ Server Deletion
 
 Port Deletion
     [Tags]  delete
-    Delete Port  user  ${PORT['port']['id']}
+    #Delete Port  user  ${PORT['port']['id']}
 
 Delete keypair
     [Tags]  delete
