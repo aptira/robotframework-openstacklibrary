@@ -70,6 +70,7 @@ User Login
 Port Creation 
     [Tags]  create
     ${PORT}=    Create Port    user  ${PORT_NAME}  ${NETWORK_ID}
+    Set Global Variable  ${PORT}
     
 Server Creation
     [Tags]  create
