@@ -46,6 +46,7 @@ ${TOTAL_IMAGES}         300
 ${IMAGE_NAME}           test_image
 ${IMAGE_PATH}           /root/CentOS-7-x86_64-GenericCloud.qcow2
 ${KEY_FILE}             /root/.ssh/id_rsa
+${PKG_DIR}              /opt/engineering-limit-tests/pkgs
 
 *** Test Cases ***
 User Creation
@@ -93,20 +94,40 @@ Server Verification
     ${length} =  Get Length  ${INSTANCES}
     Should Be Equal As Integers     ${length}   1
 
+Start iperf3 server
+    ${IPERF} =    Start Process       iperf3 -s   stdout=iperf.log   cwd=${CWD}    shell=yes
+    Set Global Variable  ${IPERF}
+
 Check Disk Usage After Creation
     [Tags]  check
     Open Connection    ${PORT['port']['fixed_ips'][0]['ip_address']}
     Login With Public Key    cloud-user  ${KEY_FILE}
     ${stdout}=  Execute Command  sudo df -h
     Log  ${stdout}
+    Put Directory  ${PKG_DIR}
+    ${stdout}=  Execute Command  sudo rpm -ivh ~/pkgs/*
+    Log ${stdout}
+    ${stdout}=  Execute Command  sudo stress -c 2
+    Log ${stdout}
+    ${stdout}=  Execute Command  sudo stress --vm-bytes $(awk '/MemFree/{printf "%d\n", $2 * 0.9;}' < /proc/meminfo)k --vm-keep -m 1
+    Log ${stdout}
+    Put File  ${CURDIR}/test.fio
+    ${stdout}=  Execute Command  sudo fio test.fio
+    Log ${stdout}
+    ${stdout}=  Execute Command  sudo iperf3 -c 10.126.192.30 -P 4
+    Log ${stdout}
     Close Connection
+
+Stop iperf3 server
+    Terminate Process    ${IPERF}
 
 Server Deletion
     [Tags]  delete
-
+    Delete Servers   user  ${SERVER_NAME}  300
+    
 Port Deletion
     [Tags]  delete
-    #Delete Port  user  ${PORT['port']['id']}
+    Delete Port  user  ${PORT['port']['id']}
 
 Delete keypair
     [Tags]  delete

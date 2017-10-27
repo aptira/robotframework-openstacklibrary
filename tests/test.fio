@@ -1,0 +1,23 @@
+[global]
+#logging 
+#write_iops_log=write_iops_log 
+#write_bw_log=write_bw_log 
+#write_lat_log=write_lat_log 
+ioengine=libaio 
+filename=/root/testfile.fio 
+invalidate=0            #   mandatory 
+bs=4M
+size=10G
+iodepth=32
+
+[SequentialWrite] 
+name=seqwrite 
+rw=write
+
+[RandomRead] 
+name=randomread 
+rw=randread
+
+[RandomWrite] 
+name=randomwrite 
+rw=randwrite
