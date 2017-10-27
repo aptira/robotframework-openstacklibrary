@@ -404,3 +404,15 @@ class OpenStackKeywords(object):
         session = self._cache.switch(alias)
         glance = gcclient.Client(GLANCE_API_VERSION, session=session)
         glance.images.delete(image_id)
+
+    def create_keypair(self, alias, key_name, public_key):
+        self.builtin.log('Creating keypair: %s' % key_name, 'DEBUG')
+        session = self._cache.switch(alias)
+        nova = nvclient.Client(NOVA_API_VERSION, session=session)
+        return nova.keypairs.create(key_name, public_key)
+
+    def delete_keypair(self, alias, keypair_id):
+        self.builtin.log('Deleting keypair: %s' % keypair_id, 'DEBUG')
+        session = self._cache.switch(alias)
+        nova = nvclient.Client(NOVA_API_VERSION, session=session)
+        return nova.keypairs.delete(keypair_id)

@@ -23,7 +23,8 @@ ${TEST_FLAVOR_NAME}    testflavor
 ${TEST_ZONE}           testzone
 ${NETWORK_ID}           367facbf-18ec-4134-879b-2b8deb7a307c
 ${PORT_NAME}            testvmport
-${KEY_NAME}             vmtest-key
+${KEYPAIR_NAME}         vmtest-key
+${PUBKEY_FILE}          /root/.ssh/id_rsa.pub
 ${SERVER_NAME}          testserver
 ${IMAGE_UUID}           57ff0f0a-a031-4650-a8dd-4721ed0a4b65
 ${TOTAL_CORES}          10
@@ -47,10 +48,32 @@ ${IMAGE_PATH}           /root/CentOS-7-x86_64-GenericCloud.qcow2
 ${KEY_FILE}             /root/.ssh/director.pem
 
 *** Test Cases ***
+User Creation
+    [Tags]  create
+    ${PROJECT}=  Get Project  admin  ${TEST_PROJECT}  ${TEST_DOMAIN}
+    ${USER}=  Create User  admin  ${TEST_USER}  ${PROJECT.id}  ${TEST_DOMAIN}  ${EMPTY}  \${userpass}
+    ${MEMBER_ROLE}=  Get Role  admin  ${MEMBER_ROLE_NAME}
+    Add Role To User  admin  ${MEMBER_ROLE.id}  ${USER.id}  ${PROJECT.id}
+    ${HEAT_ROLE}=  Get Role  admin  ${HEAT_ROLE_NAME}
+    Add Role To User  admin  ${HEAT_ROLE.id}  ${USER.id}  ${PROJECT.id}
+    ${resp}=  Get User  admin  ${TEST_USER}  ${TEST_PROJECT}
+    Should Be Equal As Strings  ${resp.name}  ${TEST_USER}
+
 Flavor Creation
     [Tags]  create
     ${FLAVOR}=  Create Flavor   admin  ${TEST_FLAVOR_NAME}
     Set Global Variable  ${FLAVOR}
+
+User Login
+    [Tags]  login
+    Create Session  user    ${AUTH_URL}  ${TEST_USER}  ${userpass}  ${TEST_PROJECT}  ${TEST_DOMAIN}
+
+Create keypair
+    [Tags]  create
+    ${rc}       ${PUBLIC_KEY} =    Run and Return Rc And Output cat ${PUBKEY_FILE}
+    Should Be Equal As Integers    ${rc}     0
+    ${KEYPAIR_ID}=      Create Keypair  user    ${KEYPAIR_NAME} ${PUBLIC_KEY}
+    Set Global Variable ${KEYPAIR_ID}
 
 Port Creation 
     [Tags]  create
@@ -59,7 +82,7 @@ Port Creation
     
 Server Creation
     [Tags]  create
-    ${SERVER}=  Create Server With Port  admin  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  default  ${KEY_NAME}  ${PORT['port']['id']}
+    ${SERVER}=  Create Server With Port  admin  ${SERVER_NAME}  ${IMAGE_UUID}  ${FLAVOR}  default  ${KEYPAIR_NAME}  ${PORT['port']['id']}
     Set Global Variable  ${SERVER}
 
 Server Verification
@@ -70,7 +93,7 @@ Server Verification
 
 Check Disk Usage After Creation
     [Tags]  check
-    Open Connection    ${PORT['fixed_ips'][0]['ip_address']}
+    Open Connection    ${PORT['port']['fixed_ips'][0]['ip_address']}
     Login With Public Key    heat-admin  ${KEY_FILE}
     ${stdout}=  Execute Command  sudo df -h
     Log  ${stdout}
@@ -83,7 +106,16 @@ Port Deletion
     [Tags]  delete
     Delete Port  admin  ${PORT['port']['id']}
 
+Delete keypair
+    [Tags]  delete
+    Delete Keypair      user    ${KEYPAIR_ID}
+
 Flavor Deletion
     [Tags]  delete
     Delete Flavor   admin  ${FLAVOR.id}
+
+User Deletion
+    [Tags]  delete
+    ${resp}=  Get User  admin  ${TEST_USER}  ${TEST_PROJECT}
+    Delete User  admin  ${resp.id}
          
