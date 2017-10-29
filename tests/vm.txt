@@ -48,6 +48,8 @@ ${IMAGE_NAME}           test_image
 ${IMAGE_PATH}           /root/CentOS-7-x86_64-GenericCloud.qcow2
 ${KEY_FILE}             /root/.ssh/id_rsa
 ${PKG_DIR}              /opt/engineering-limit-tests/pkgs
+${MONITOR_SCRIPT}       vmstat.sh
+${MONITOR_OUTPUT_PATH}  %{PWD}/../outputs/
 
 *** Test Cases ***
 User Creation
@@ -99,6 +101,10 @@ Start iperf3 server
     ${IPERF} =    Start Process       iperf3 -s   stdout=iperf.log   cwd=${CURDIR}    shell=yes
     Set Global Variable  ${IPERF}
 
+Start Monitor
+    ${HANDLE} =    Start Process       ${CWD}/${MONITOR_SCRIPT} ${KEY_FILE} ${PORT['port']['fixed_ips'][0]['ip_address']}   stdout=${MONITOR_OUTPUT_PATH}vmstat.log   cwd=${CWD}    shell=yes
+    Set Global Variable  ${HANDLE}
+
 Test Instance
     [Tags]  check
     Open Connection    ${PORT['port']['fixed_ips'][0]['ip_address']}
@@ -145,6 +151,9 @@ Run network test
 
 Stop iperf3 server
     Terminate Process    ${IPERF}
+
+Stop Monitor
+    Terminate Process    ${HANDLE}
 
 Server Deletion
     [Tags]  delete
