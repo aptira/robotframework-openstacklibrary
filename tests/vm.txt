@@ -106,15 +106,39 @@ Test Instance
     ${stdout}=  Execute Command  sudo df -h
     Log  ${stdout}
     Put Directory  ${PKG_DIR}  /tmp
+    Put File  ${CURDIR}/test.fio
     ${stdout}=  Execute Command  sudo rpm -ivh /tmp/pkgs/*
     Log  ${stdout}
-    ${stdout}=  Execute Command  sudo stress -c 2
+    Close Connection
+        
+Run CPU stress test
+    [Tags]  check
+    Open Connection    ${PORT['port']['fixed_ips'][0]['ip_address']}
+    Login With Public Key    cloud-user  ${KEY_FILE}
+    ${stdout}=  Execute Command  sudo stress -c 2 -t 30
     Log  ${stdout}
+    Close Connection
+
+Run MEM stress test
+    [Tags]  check
+    Open Connection    ${PORT['port']['fixed_ips'][0]['ip_address']}
+    Login With Public Key    cloud-user  ${KEY_FILE}
     ${stdout}=  Execute Command  sudo stress --vm-bytes $(awk '/MemFree/{printf "%d\n", $2 * 0.9;}' < /proc/meminfo)k --vm-keep -m 1
     Log  ${stdout}
-    Put File  ${CURDIR}/test.fio
+    Close Connection
+
+Run file system test
+    [Tags]  check
+    Open Connection    ${PORT['port']['fixed_ips'][0]['ip_address']}
+    Login With Public Key    cloud-user  ${KEY_FILE}
     ${stdout}=  Execute Command  sudo fio test.fio
     Log  ${stdout}
+    Close Connection
+
+Run network test
+    [Tags]  check
+    Open Connection    ${PORT['port']['fixed_ips'][0]['ip_address']}
+    Login With Public Key    cloud-user  ${KEY_FILE}
     ${stdout}=  Execute Command  sudo iperf3 -c 10.126.192.30 -P 4
     Log  ${stdout}
     Close Connection
