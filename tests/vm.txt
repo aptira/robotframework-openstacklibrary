@@ -107,7 +107,7 @@ Test Instance
     Log  ${stdout}
     Put Directory  ${PKG_DIR}  /tmp
     Put File  ${CURDIR}/test.fio
-    ${stdout}=  Execute Command  sudo rpm -ivh /tmp/pkgs/*
+    ${stdout}=  Execute Command  sudo rpm -ivh /tmp/pkgs/*.rpm 2>&1
     Log  ${stdout}
     Close Connection
         
