@@ -102,7 +102,7 @@ Start iperf3 server
     Set Global Variable  ${IPERF}
 
 Start Monitor
-    ${HANDLE} =    Start Process       ${CWD}/${MONITOR_SCRIPT} ${KEY_FILE} ${PORT['port']['fixed_ips'][0]['ip_address']}   stdout=${MONITOR_OUTPUT_PATH}vmstat.log   cwd=${CWD}    shell=yes
+    ${HANDLE} =    Start Process       ${CWD}/${MONITOR_SCRIPT} ${KEY_FILE} ${PORT['port']['fixed_ips'][0]['ip_address']}   stdout=${MONITOR_OUTPUT_PATH}vmstat.log   cwd=${CURDIR}    shell=yes
     Set Global Variable  ${HANDLE}
 
 Test Instance
