@@ -129,7 +129,7 @@ Run MEM stress test
     [Tags]  check
     Open Connection    ${PORT['port']['fixed_ips'][0]['ip_address']}
     Login With Public Key    cloud-user  ${KEY_FILE}
-    ${stdout}=  Execute Command  sudo stress --vm-bytes $(awk '/MemFree/{printf "%d\n", $2 * 0.9;}' < /proc/meminfo)k --vm-keep -m 1 -t 30
+    ${stdout}=  Execute Command  sudo stress --vm-bytes $(awk '/MemFree/{printf \"%d\\n\", $2 * 0.9;}' < /proc/meminfo)k --vm-keep -m 1 -t 30
     Log  ${stdout}
     Close Connection
 
